@@ -3,8 +3,8 @@
 #include <vector>
 
 //// Global Variables ////
-std::vector<string> Lexeme;
-std::vector<string> Token;
+std::string Lexeme;
+std::string Token;
 
 // Integer Tokens
 std::vector<int> Value;
@@ -16,15 +16,11 @@ std::vector<std::string> Literal;
 class LexicalAnalyzer 
 {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
     public:
-        // Non-default Constructor
         LexicalAnalyzer(std::string filename);
-
-        // Destructor
         ~LexicalAnalyzer();
-
         void GetNextToken();
 
     private:
-
+        void ProcessWordToken(std::string sym);
 
 };
