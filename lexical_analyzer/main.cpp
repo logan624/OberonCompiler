@@ -15,8 +15,8 @@ int main(int argc, char* argv[])
     // Create instance of the lexical analyzer
     
     // while (Token != EOF)
-    {
+    // {
         // .GetNextToken();
         // .DisplayToken();
-    }
+    // }
 }
