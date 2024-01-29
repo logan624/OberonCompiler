@@ -9,6 +9,8 @@ enum Token_T {
     // Reserved Words
     MODULE, PROCEDURE, VAR, BEGIN, END, IF, THEN, ELSE, ELSIF, WHILE, DO,
     ARRAY, RECORD, CONST, TYPE,
+    // Type Operators
+    INTEGER, REAL, CHAR,
     // Relational Operators
     EQUAL, HASH, LESST, LESSTE, GREATERT, GREATERTE, 
     // Addition Subtraction Operators
@@ -47,9 +49,11 @@ struct Token
 
 // Global Variables //
 extern Token token;
-extern int c_char;
+extern char c_char; // Current Character
+extern char n_char; // Look-ahead character
 extern int line_no;
 
+// Class Declaration
 class LexicalAnalyzer 
 {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
     public:
@@ -59,6 +63,10 @@ class LexicalAnalyzer
 
     private:
         std::string m_file;
+        std::string m_f_contents;
 
         void ProcessWordToken(std::string sym);
 };
+
+// Procedural Functions
+bool isReservedWord(std::string s);
