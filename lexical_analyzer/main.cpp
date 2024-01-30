@@ -20,12 +20,13 @@ int main(int argc, char* argv[])
 
     // Create instance of the lexical analyzer
     LexicalAnalyzer lex(prog_file);
-    
+    Token token;
+    Token_T token_type;
     lex.GetNextToken();
     
-    // while (Token != EOF)
-    // {
-        // .GetNextToken();
-        // .DisplayToken();
-    // }
+    while (token_type != EOF_T)
+    {
+        lex.GetNextToken();
+        lex.DisplayToken();
+    }
 }
