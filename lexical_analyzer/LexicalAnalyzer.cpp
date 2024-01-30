@@ -211,20 +211,11 @@ LexicalAnalyzer::LexicalAnalyzer(std::string filename)
         {"<=", Token_T::RELOP},    
         {">", Token_T::RELOP},     
         {">=", Token_T::RELOP},
-        // {"EQUAL", Token_T::EQUAL},
-        // {"HASH", Token_T::HASH},
-        // {"LESST", Token_T::LESST},
-        // {"LESSTE", Token_T::LESSTE},    
-        // {"GREATERT", Token_T::GREATERT},     
-        // {"GREATERTE", Token_T::GREATERTE},
 
         // Addition Subtraction Operators
         {"+", Token_T::ADDOP},
         {"-", Token_T::ADDOP},
         {"OR", Token_T::ADDOP},
-        // {"PLUS", Token_T::PLUS},
-        // {"MINUS", Token_T::MINUS},
-        // {"OR", Token_T::OR},
 
         // Multiplication Operators
         {"*", Token_T::MULOP},
@@ -232,11 +223,6 @@ LexicalAnalyzer::LexicalAnalyzer(std::string filename)
         {"DIV", Token_T::MULOP},
         {"MOD", Token_T::MULOP},
         {"&", Token_T::MULOP},
-        // {"*", Token_T::MULT},
-        // {"/", Token_T::DIV_SLASH},
-        // {"DIV", Token_T::DIV},
-        // {"MOD", Token_T::MOD},
-        // {"&", Token_T::AMPERSAND},
 
         // Assignment Operators
         {":=", Token_T::ASSOP},
@@ -254,22 +240,10 @@ LexicalAnalyzer::LexicalAnalyzer(std::string filename)
         {".", Token_T::PERIOD},
         {"\'", Token_T::APOSTROPHE},
         {"~", Token_T::TILDAE},
-        // {"(", Token_T::SOFT_PARENTHESES_OPEN},
-        // {")", Token_T::SOFT_PARENTHESES_CLOSE},
-        // {"{", Token_T::POINTY_PARENTHESES_OPEN},
-        // {"}", Token_T::POINTY_PARENTHESES_CLOSE},
-        // {"[", Token_T::HARD_BRACKET_OPEN},
-        // {"]", Token_T::HARD_BRACKET_CLOSE},
-        // {",", Token_T::COMMA},
-        // {":", Token_T::COLON},
-        // {";", Token_T::SEMICOLON},
-        // {".", Token_T::PERIOD},
-        // {"\'", Token_T::APOSTROPHE},
-        // {"~", Token_T::TILDAE},
 
         // Comments
-        {"(*", Token_T::OPEN_COMMENT},
-        {"*)", Token_T::CLOSE_COMMENT},
+        {"(*", Token_T::COMMENT},
+        {"*)", Token_T::COMMENT},
 
         // End of File
         {"EOF", Token_T::EOF_T}

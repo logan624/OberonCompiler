@@ -17,26 +17,19 @@ enum Token_T {
     INTEGER, REAL, CHAR,
 
     // Relational Operators
-    EQUAL, HASH, LESST, LESSTE, GREATERT, GREATERTE, 
-    // EQUAL, HASH, LESST, LESSTE, GREATERT, GREATERTE, 
+    RELOP,
 
     // Addition Subtraction Operators
     ADDOP,
-    // PLUS, MINUS, OR,
 
     // Multiplication Operators
     MULOP,
-    // MULT, DIV_SLASH, DIV, MOD, AMPERSAND,
 
     // Assignment Operator
     ASSOP,
 
     // Additional Operators
     L_SYMBOL, R_SYMBOL,
-    // SOFT_PARENTHESES_OPEN, SOFT_PARENTHESES_CLOSE, 
-    // POINTY_PARENTHESES_OPEN, POINTY_PARENTHESES_CLOSE,
-    // HARD_BRACKET_OPEN, HARD_BRACKET_CLOSE,
-
     COMMA,
     COLON,
     SEMICOLON,
@@ -45,7 +38,7 @@ enum Token_T {
     TILDAE,
 
     // Comments
-    OPEN_COMMENT, CLOSE_COMMENT,
+    COMMENT,
 
     // End of File
     EOF_T,
