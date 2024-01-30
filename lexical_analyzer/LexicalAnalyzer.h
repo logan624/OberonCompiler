@@ -44,7 +44,10 @@ enum Token_T {
     EOF_T,
 
     // Unknown
-    UNKNOWN
+    UNKNOWN,
+
+    // Literal
+    LITERAL
 };
 
 // Token Struct Type
@@ -53,7 +56,7 @@ struct Token
     Token_T m_token;
     std::string m_lexeme;
     int m_value;
-    int m_valuer;
+    float m_valuer;
     std::string m_literal;
 };
 
@@ -75,10 +78,6 @@ void processWhitespace();
 Token processIdentifier();
 Token processNumber();
 Token processLiteral();
-Token processAddOperator();
-Token processAssOperator();
-Token processMultOperator();
-Token processRelOperator();
 Token processBrackets();
 
 // Class Declaration

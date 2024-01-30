@@ -7,6 +7,77 @@ char n_char; // Look-ahead character
 int file_index;
 std::string f_contents;
 
+std::map<std::string, Token_T> reserved_words_dict = {
+        // Reserved Words
+        {"MODULE", Token_T::MODULE},
+        {"PROCEDURE", Token_T::PROCEDURE},
+        {"VAR", Token_T::VAR},
+        {"BEGIN", Token_T::BEGIN},
+        {"END", Token_T::END},
+        {"IF", Token_T::IF},
+        {"THEN", Token_T::THEN},
+        {"ELSE", Token_T::ELSE},
+        {"ELSIF", Token_T::ELSIF},
+        {"WHILE", Token_T::WHILE},
+        {"DO", Token_T::DO},
+        {"ARRAY", Token_T::ARRAY},
+        {"RECORD", Token_T::RECORD},
+        {"CONST", Token_T::CONST},
+        {"TYPE", Token_T::TYPE},
+        
+        // Type Operators
+        {"INTEGER", Token_T::INTEGER},
+        {"REAL", Token_T::REAL},
+        {"CHAR", Token_T::CHAR},
+        
+        // Relational Operators
+        {"=", Token_T::RELOP},
+        {"#", Token_T::RELOP},
+        {"<", Token_T::RELOP},
+        {"<=", Token_T::RELOP},    
+        {">", Token_T::RELOP},     
+        {">=", Token_T::RELOP},
+
+        // Addition Subtraction Operators
+        {"+", Token_T::ADDOP},
+        {"-", Token_T::ADDOP},
+        {"OR", Token_T::ADDOP},
+
+        // Multiplication Operators
+        {"*", Token_T::MULOP},
+        {"/", Token_T::MULOP},
+        {"DIV", Token_T::MULOP},
+        {"MOD", Token_T::MULOP},
+        {"&", Token_T::MULOP},
+
+        // Assignment Operators
+        {":=", Token_T::ASSOP},
+
+        // Additional Operators
+        {"(", Token_T::L_SYMBOL},
+        {")", Token_T::R_SYMBOL},
+        {"{", Token_T::L_SYMBOL},
+        {"}", Token_T::R_SYMBOL},
+        {"[", Token_T::L_SYMBOL},
+        {"]", Token_T::R_SYMBOL},
+        {",", Token_T::COMMA},
+        {":", Token_T::COLON},
+        {";", Token_T::SEMICOLON},
+        {".", Token_T::PERIOD},
+        {"\'", Token_T::APOSTROPHE},
+        {"~", Token_T::TILDAE},
+
+        // Comments
+        {"(*", Token_T::COMMENT},
+        {"*)", Token_T::COMMENT},
+
+        // End of File
+        {"EOF", Token_T::EOF_T},
+
+        // Literal
+        {"LITERAL", Token_T::LITERAL}
+    };
+
 void ReadNext()
 {
     file_index++;
@@ -95,6 +166,18 @@ void processWhitespace()
 Token processIdentifier()
 {
     Token ret_token;
+    std::string identifier = "";
+    
+    identifier += c_char;
+    ReadNext();
+
+    while (std::isalpha(c_char) == true || std::isdigit(c_char) == true)
+    {
+        identifier += c_char;
+        ReadNext();
+    }
+
+    // Read in the entire identifier word
 
     return ret_token;
 }
@@ -109,57 +192,60 @@ Token processNumber()
 Token processLiteral()
 {
     Token ret_token;
+    bool finished_good = false;
+
     ret_token.m_literal = "";
 
-    // NEED TO FIGURE THIS OUT 
-    // ReadNext();
+    // Check to see if the starting character is either a ' or a ", and handle accordingly
+    if (c_char == '\'')
+    {
+        while (c_char != '\'' && c_char != '\0')
+        {
+            ret_token.m_literal += c_char;
+            ReadNext();
+        }
 
-    // while (c_char != '\'')
-    // {
-    //     if(c_char == '\n')
-    //     {
-    //         std::cout << "unterminated literal" << std::endl;
-    //         return Token{Token_T::LITT, result,0,0.0,result};
-    //     }
-    //     ret_token.m_literal += c_char;
-    //     ReadNext();
-    // }
-    
-    // ReadNext();
+        if (c_char == '\'')
+        {
+            ReadNext();
+            finished_good = true;
+        }
+    }
+    else if (c_char == '\"')
+    {
+        while (c_char != '\"' && c_char != '\0')
+        {
+            ret_token.m_literal += c_char;
+            ReadNext();
+        }
+        
+        if (c_char == '\"')
+        {
+            ReadNext();
+            finished_good = true;
+        }
+    }
 
-    ret_token.m_lexeme = ret_token.m_literal;
+    if (finished_good)
+    {
+        ret_token.m_lexeme = ret_token.m_literal;
+        ret_token.m_token = Token_T::LITERAL;
+    }
+    else
+    {
+        std::cout << "ERRROR - SYNTAX - Unterminated literal string.\nTerminating Compilation."
+                  << std::endl;
+    }
 
     return ret_token;
 }
 
-Token processAssOperator()
+Token processBrackets()
 {
     Token ret_token;
 
     return ret_token;
 }
-
-Token processRelOperator()
-{
-    Token ret_token;
-
-    return ret_token;
-}
-
-Token processMultOperator()
-{
-    Token ret_token;
-
-    return ret_token;
-}
-
-Token processAddOperator()
-{
-    Token ret_token;
-
-    return ret_token;
-}
-
 
 // Member Function Definitions
 LexicalAnalyzer::LexicalAnalyzer(std::string filename)
@@ -181,73 +267,10 @@ LexicalAnalyzer::LexicalAnalyzer(std::string filename)
         f_contents += line;
     }
 
-    reserved_words_dict = {
-        // Reserved Words
-        {"MODULE", Token_T::MODULE},
-        {"PROCEDURE", Token_T::PROCEDURE},
-        {"VAR", Token_T::VAR},
-        {"BEGIN", Token_T::BEGIN},
-        {"END", Token_T::END},
-        {"IF", Token_T::IF},
-        {"THEN", Token_T::THEN},
-        {"ELSE", Token_T::ELSE},
-        {"ELSIF", Token_T::ELSIF},
-        {"WHILE", Token_T::WHILE},
-        {"DO", Token_T::DO},
-        {"ARRAY", Token_T::ARRAY},
-        {"RECORD", Token_T::RECORD},
-        {"CONST", Token_T::CONST},
-        {"TYPE", Token_T::TYPE},
-        
-        // Type Operators
-        {"INTEGER", Token_T::INTEGER},
-        {"REAL", Token_T::REAL},
-        {"CHAR", Token_T::CHAR},
-        
-        // Relational Operators
-        {"=", Token_T::RELOP},
-        {"#", Token_T::RELOP},
-        {"<", Token_T::RELOP},
-        {"<=", Token_T::RELOP},    
-        {">", Token_T::RELOP},     
-        {">=", Token_T::RELOP},
+    input_file.close();
 
-        // Addition Subtraction Operators
-        {"+", Token_T::ADDOP},
-        {"-", Token_T::ADDOP},
-        {"OR", Token_T::ADDOP},
-
-        // Multiplication Operators
-        {"*", Token_T::MULOP},
-        {"/", Token_T::MULOP},
-        {"DIV", Token_T::MULOP},
-        {"MOD", Token_T::MULOP},
-        {"&", Token_T::MULOP},
-
-        // Assignment Operators
-        {":=", Token_T::ASSOP},
-
-        // Additional Operators
-        {"(", Token_T::L_SYMBOL},
-        {")", Token_T::R_SYMBOL},
-        {"{", Token_T::L_SYMBOL},
-        {"}", Token_T::R_SYMBOL},
-        {"[", Token_T::L_SYMBOL},
-        {"]", Token_T::R_SYMBOL},
-        {",", Token_T::COMMA},
-        {":", Token_T::COLON},
-        {";", Token_T::SEMICOLON},
-        {".", Token_T::PERIOD},
-        {"\'", Token_T::APOSTROPHE},
-        {"~", Token_T::TILDAE},
-
-        // Comments
-        {"(*", Token_T::COMMENT},
-        {"*)", Token_T::COMMENT},
-
-        // End of File
-        {"EOF", Token_T::EOF_T}
-    };
+    c_char = f_contents[file_index];
+    n_char = f_contents[file_index + 1];
 }
  
 LexicalAnalyzer::~LexicalAnalyzer()
@@ -258,6 +281,7 @@ LexicalAnalyzer::~LexicalAnalyzer()
 Token LexicalAnalyzer::GetNextToken()
 {
     Token ret_token;
+    std::string temp;
 
     while (c_char != '\0') 
     {  
@@ -286,14 +310,18 @@ Token LexicalAnalyzer::GetNextToken()
                 case '-':
                 // Need to Include OR in the Add_Ops
                 //      - Probably call from identifier?
-
+                    temp += c_char;
+                    token.m_lexeme = temp;
+                    token.m_token = Token_T::ADDOP;
                     break;
 
-                // MultOps
+                // MultOps -- Make sure to handle DIV and MOD in the identifier function
                 case '*':
                 case '/':
                 case '&':
-                    ret_token = processMultOperator();
+                    temp += c_char;
+                    token.m_lexeme = temp;
+                    token.m_token = Token_T::MULOP;
                     break;
 
                 // Brackets
@@ -317,7 +345,7 @@ Token LexicalAnalyzer::GetNextToken()
 
                 // Literals
                 case '\'':
-                case '"':
+                case '\"':
                     ret_token = processLiteral();
                     break;
 
@@ -326,30 +354,47 @@ Token LexicalAnalyzer::GetNextToken()
                 case '>':
                 case '=':
                 case '#':
-                    ret_token = processRelOperator();
+
                     break;
 
                 // Assign Operator and Symbols
                 case ':':
-                    // Need to check if it is the assignment operator 
-                    ret_token = processAssOperator();
+                    // Need to check if it is the assignment operator
+                    if (n_char == '=')
+                    {
+                        ret_token.m_token = Token_T::ASSOP;
+                        ret_token.m_lexeme = ":=";
+                        ReadNext();
+                        ReadNext();
+                    }
+                    else
+                    {
+                        ret_token.m_token = Token_T::COLON;
+                        ret_token.m_lexeme = ":";
+                        ReadNext();
+                    }
 
+                    break;
                 case '.':
                     ReadNext();
                     ret_token.m_token = Token_T::PERIOD;
                     ret_token.m_lexeme  = ".";
+                    break;
                 case ';':
                     ReadNext();
                     ret_token.m_token = Token_T::SEMICOLON;
                     ret_token.m_lexeme  = ";";
+                    break;
                 case ',':
                     ReadNext();
                     ret_token.m_token = Token_T::COMMA;
                     ret_token.m_lexeme  = ",";
+                    break;
                 case '~':
                     ReadNext();
                     ret_token.m_token = Token_T::TILDAE;
                     ret_token.m_lexeme  = "~";
+                     break;
 
                 // Default - When unknown
                 default:
@@ -373,5 +418,5 @@ Token LexicalAnalyzer::GetNextToken()
 
 void LexicalAnalyzer::DisplayToken()
 {
-    
+
 }
