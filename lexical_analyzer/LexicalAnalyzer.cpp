@@ -105,7 +105,7 @@ bool isReservedWord(std::string s)
     {
         "MODULE", "PROCEDURE", "VAR", "BEGIN", "END", "INTEGER", "REAL",
         "CHAR", "IF", "THEN", "ELSE", "ELSIF", "WHILE", "DO", "ARRAY",
-        "RECORD", "CONST", "TYPE"};
+        "RECORD", "CONST", "TYPE", "MOD", "OR", "DIV"};
 
     for (const std::string word : reserved_words)
     {
@@ -251,7 +251,7 @@ Token processNumber()
 
 Token processLiteral()
 {
-    char current_c_char = c_char;
+    char start_char = c_char;
 
     Token ret_token;
     bool finished_good = false;
@@ -263,7 +263,7 @@ Token processLiteral()
     {
         ReadNext();
 
-        while (c_char != '\'' && c_char != '\0')
+        while (c_char != '\'' && c_char != '\0' && c_char != '\n')
         {
             ret_token.m_literal += c_char;
             ReadNext();
@@ -279,7 +279,7 @@ Token processLiteral()
     {
         ReadNext();
 
-        while (c_char != '\"' && c_char != '\0')
+        while (c_char != '\"' && c_char != '\0' && c_char != '\n')
         {
             ret_token.m_literal += c_char;
             ReadNext();
@@ -294,13 +294,13 @@ Token processLiteral()
 
     if (finished_good)
     {
-        ret_token.m_lexeme = ret_token.m_literal;
         ret_token.m_token = Token_T::LITERAL;
     }
     else
     {
-        std::cout << "ERRROR - SYNTAX - Unterminated literal string '" << ret_token.m_literal << ".\nTerminating Compilation."
-                  << std::endl;
+        std::cout << "ERRROR - SYNTAX - Unterminated literal string '" << ret_token.m_literal << std::endl;
+        ret_token.m_token = Token_T::UNKNOWN;
+        ret_token.m_lexeme = start_char + ret_token.m_literal;
     }
 
     return ret_token;
@@ -487,7 +487,7 @@ std::string tokenTypeToString(Token_T t)
     std::map<Token_T, std::string> dict = 
     {
         {Token_T::MODULE, "MODULET"},
-        {Token_T::PROCEDURE, "PROCEDURET"},
+        {Token_T::PROCEDURE, "PROCT"},
         {Token_T::VAR, "VART"},
         {Token_T::BEGIN, "BEGINT"},
         {Token_T::END, "ENDT"},
@@ -498,7 +498,7 @@ std::string tokenTypeToString(Token_T t)
         {Token_T::WHILE, "WHILET"},
         {Token_T::DO, "DOT"},
         {Token_T::ARRAY, "ARRAYT"},
-        {Token_T::RECORD, "RECORDT"},
+        {Token_T::RECORD, "RECT"},
         {Token_T::CONST, "CONSTT"},
         {Token_T::TYPE, "TYPET"},
         {Token_T::INTEGER, "INTEGERT"},
@@ -507,21 +507,21 @@ std::string tokenTypeToString(Token_T t)
         {Token_T::RELOP, "RELOPT"},
         {Token_T::ADDOP, "ADDOPT"},
         {Token_T::MULOP, "MULOPT"},
-        {Token_T::ASSOP, "ASSOPT"},
-        {Token_T::L_SYMBOL, "L_SYMBOLT"},
-        {Token_T::R_SYMBOL, "R_SYMBOLT"},
+        {Token_T::ASSOP, "ASSIGNOPT"},
+        {Token_T::L_SYMBOL, "LPARENT"},
+        {Token_T::R_SYMBOL, "RPARENT"},
         {Token_T::COMMA, "COMMAT"},
         {Token_T::COLON, "COLONT"},
-        {Token_T::SEMICOLON, "SEMICOLONT"},
+        {Token_T::SEMICOLON, "SEMIT"},
         {Token_T::PERIOD, "PERIODT"},
         {Token_T::APOSTROPHE, "APOSTROPHET"},
         {Token_T::TILDAE, "TILDAET"},
         {Token_T::COMMENT, "COMMENTT"},
         {Token_T::UNKNOWN, "UNKNOWNT"},
         {Token_T::LITERAL, "LITERALT"},
-        {Token_T::IDENTIFIER, "IDENTIFIERT"},
-        {Token_T::NUMBER, "NUMBERT"},
-        {Token_T::EOF_T, "EOF_T"}
+        {Token_T::IDENTIFIER, "IDENTT"},
+        {Token_T::NUMBER, "NUMBT"},
+        {Token_T::EOF_T, "EOFT"}
     };
 
     return dict[t];
