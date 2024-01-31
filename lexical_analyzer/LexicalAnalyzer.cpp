@@ -1,5 +1,7 @@
 #include "LexicalAnalyzer.h"
 
+#include <cctype>
+
 // Global Variables //
 Token token;
 char c_char; // Current Character
@@ -165,32 +167,93 @@ void processWhitespace()
 
 Token processIdentifier()
 {
+    std::string file_contents = f_contents;
+
     Token ret_token;
     std::string identifier = "";
     
     identifier += c_char;
     ReadNext();
 
-    while (std::isalpha(c_char) == true || std::isdigit(c_char) == true)
+    while (std::isalpha(c_char) != 0 || std::isdigit(c_char) != 0) 
     {
         identifier += c_char;
         ReadNext();
     }
 
     // Read in the entire identifier word
+    if (isReservedWord(identifier))
+    {
+        ret_token.m_lexeme = identifier;
+        ret_token.m_token = whichToken(identifier);
+    }
+    else
+    {
+        if (identifier.length() > 17)
+        {
+            std::string temp = "";
+
+            for(int i = 0; i <= 16; i++)
+            {
+                temp += identifier[i];
+            }
+
+            std::cout << "Error - Identifier Length: Identifier '" << identifier <<
+                      "' longer than 17 characters, truncating to '" << temp << "'." << std::endl;
+            
+            identifier = temp;
+        }
+
+        ret_token.m_lexeme = identifier;
+        ret_token.m_token = Token_T::IDENTIFIER;
+    }
 
     return ret_token;
 }
 
 Token processNumber()
 {
+    std::string raw = "";
+    bool is_int = true;
+    int int_value;
+    int real_value;
+
     Token ret_token;
+
+    raw += c_char;
+    ReadNext();
+
+    while(std::isdigit(c_char) != 0 || c_char == '.')
+    {
+        if (c_char == '.')
+        {
+            is_int = false;
+        }
+
+        raw += c_char;
+        ReadNext();
+    }
+
+    if (is_int)
+    {
+        ret_token.m_value = std::stoi(raw);
+        ret_token.m_token = Token_T::NUMBER;   
+    }
+    else
+    {
+        ret_token.m_valuer = std::stof(raw);
+        ret_token.m_token = Token_T::NUMBER;
+    }
+
+    ret_token.m_is_int = is_int;
 
     return ret_token;
 }
 
 Token processLiteral()
 {
+    char current_c_char = c_char;
+
     Token ret_token;
     bool finished_good = false;
 
@@ -199,6 +262,8 @@ Token processLiteral()
     // Check to see if the starting character is either a ' or a ", and handle accordingly
     if (c_char == '\'')
     {
+        ReadNext();
+
         while (c_char != '\'' && c_char != '\0')
         {
             ret_token.m_literal += c_char;
@@ -213,6 +278,8 @@ Token processLiteral()
     }
     else if (c_char == '\"')
     {
+        ReadNext();
+
         while (c_char != '\"' && c_char != '\0')
         {
             ret_token.m_literal += c_char;
@@ -233,16 +300,9 @@ Token processLiteral()
     }
     else
     {
-        std::cout << "ERRROR - SYNTAX - Unterminated literal string.\nTerminating Compilation."
+        std::cout << "ERRROR - SYNTAX - Unterminated literal string '" << ret_token.m_literal << ".\nTerminating Compilation."
                   << std::endl;
     }
-
-    return ret_token;
-}
-
-Token processBrackets()
-{
-    Token ret_token;
 
     return ret_token;
 }
@@ -264,8 +324,11 @@ LexicalAnalyzer::LexicalAnalyzer(std::string filename)
         
     while (std::getline(input_file, line))
     {
+        line += '\n';
         f_contents += line;
     }
+
+    f_contents += '\0';
 
     input_file.close();
 
@@ -281,7 +344,7 @@ LexicalAnalyzer::~LexicalAnalyzer()
 Token LexicalAnalyzer::GetNextToken()
 {
     Token ret_token;
-    std::string temp;
+    std::string temp = "";
 
     while (c_char != '\0') 
     {  
@@ -311,8 +374,9 @@ Token LexicalAnalyzer::GetNextToken()
                 // Need to Include OR in the Add_Ops
                 //      - Probably call from identifier?
                     temp += c_char;
-                    token.m_lexeme = temp;
-                    token.m_token = Token_T::ADDOP;
+                    ret_token.m_lexeme = temp;
+                    ret_token.m_token = Token_T::ADDOP;
+                    ReadNext();
                     break;
 
                 // MultOps -- Make sure to handle DIV and MOD in the identifier function
@@ -320,8 +384,9 @@ Token LexicalAnalyzer::GetNextToken()
                 case '/':
                 case '&':
                     temp += c_char;
-                    token.m_lexeme = temp;
-                    token.m_token = Token_T::MULOP;
+                    ret_token.m_lexeme = temp;
+                    ret_token.m_token = Token_T::MULOP;
+                    ReadNext();
                     break;
 
                 // Brackets
@@ -332,15 +397,23 @@ Token LexicalAnalyzer::GetNextToken()
                         ReadNext(); // Consume '*'
                         processComment(); // Now inside a comment
                         ReadNext();
-
+                        continue;
                         break;
                     }
-                case ')':
                 case '{':
-                case '}':
                 case '[':
+                    temp += c_char;
+                    ret_token.m_lexeme = temp;
+                    ret_token.m_token = Token_T::L_SYMBOL;
+                    ReadNext();
+                    break;
+                case ')':
+                case '}':
                 case ']':
-                    ret_token = processBrackets();
+                    temp += c_char;
+                    ret_token.m_lexeme = temp;
+                    ret_token.m_token = Token_T::R_SYMBOL;
+                    ReadNext();
                     break;
 
                 // Literals
@@ -354,7 +427,10 @@ Token LexicalAnalyzer::GetNextToken()
                 case '>':
                 case '=':
                 case '#':
-
+                    temp += c_char;
+                    ret_token.m_lexeme = temp;
+                    ret_token.m_token = whichToken(temp);
+                    ReadNext();
                     break;
 
                 // Assign Operator and Symbols
@@ -375,26 +451,16 @@ Token LexicalAnalyzer::GetNextToken()
                     }
 
                     break;
+
                 case '.':
-                    ReadNext();
-                    ret_token.m_token = Token_T::PERIOD;
-                    ret_token.m_lexeme  = ".";
-                    break;
                 case ';':
-                    ReadNext();
-                    ret_token.m_token = Token_T::SEMICOLON;
-                    ret_token.m_lexeme  = ";";
-                    break;
                 case ',':
-                    ReadNext();
-                    ret_token.m_token = Token_T::COMMA;
-                    ret_token.m_lexeme  = ",";
-                    break;
                 case '~':
+                    temp += c_char;
+                    ret_token.m_token = whichToken(temp);
+                    ret_token.m_lexeme = temp;
                     ReadNext();
-                    ret_token.m_token = Token_T::TILDAE;
-                    ret_token.m_lexeme  = "~";
-                     break;
+                    break;
 
                 // Default - When unknown
                 default:
@@ -404,6 +470,7 @@ Token LexicalAnalyzer::GetNextToken()
             }
         }
 
+        token = ret_token;
         return ret_token;
     }
 
@@ -413,10 +480,79 @@ Token LexicalAnalyzer::GetNextToken()
         ret_token.m_lexeme = "";
     }
 
+    token = ret_token;
     return ret_token;
+}
+
+std::string tokenTypeToString(Token_T t)
+{
+    std::map<Token_T, std::string> dict = 
+    {
+        {Token_T::MODULE, "MODULET"},
+        {Token_T::PROCEDURE, "PROCEDURET"},
+        {Token_T::VAR, "VART"},
+        {Token_T::BEGIN, "BEGINT"},
+        {Token_T::END, "ENDT"},
+        {Token_T::IF, "IFT"},
+        {Token_T::THEN, "THENT"},
+        {Token_T::ELSE, "ELSET"},
+        {Token_T::ELSIF, "ELSIFT"},
+        {Token_T::WHILE, "WHILET"},
+        {Token_T::DO, "DOT"},
+        {Token_T::ARRAY, "ARRAYT"},
+        {Token_T::RECORD, "RECORDT"},
+        {Token_T::CONST, "CONSTT"},
+        {Token_T::TYPE, "TYPET"},
+        {Token_T::INTEGER, "INTEGERT"},
+        {Token_T::REAL, "REALT"},
+        {Token_T::CHAR, "CHART"},
+        {Token_T::RELOP, "RELOPT"},
+        {Token_T::ADDOP, "ADDOPT"},
+        {Token_T::MULOP, "MULOPT"},
+        {Token_T::ASSOP, "ASSOPT"},
+        {Token_T::L_SYMBOL, "L_SYMBOLT"},
+        {Token_T::R_SYMBOL, "R_SYMBOLT"},
+        {Token_T::COMMA, "COMMAT"},
+        {Token_T::COLON, "COLONT"},
+        {Token_T::SEMICOLON, "SEMICOLONT"},
+        {Token_T::PERIOD, "PERIODT"},
+        {Token_T::APOSTROPHE, "APOSTROPHET"},
+        {Token_T::TILDAE, "TILDAET"},
+        {Token_T::COMMENT, "COMMENTT"},
+        {Token_T::UNKNOWN, "UNKNOWNT"},
+        {Token_T::LITERAL, "LITERALT"},
+        {Token_T::IDENTIFIER, "IDENTIFIERT"},
+        {Token_T::NUMBER, "NUMBERT"},
+        {Token_T::EOF_T, "EOF_T"}
+    };
+
+    return dict[t];
 }
 
 void LexicalAnalyzer::DisplayToken()
 {
+    switch (token.m_token)
+    {
+        case Token_T::LITERAL:
 
+            std::cout << "Token Type: " << tokenTypeToString(token.m_token) << ", Literal: '" << token.m_literal << "'" << std::endl;
+            break;
+
+        case Token_T::NUMBER:
+
+            if(token.m_is_int)
+            {
+                std::cout << "Token Type: " << tokenTypeToString(token.m_token) << ", Value: " << token.m_value << std::endl;
+            }
+            else
+            {
+                std::cout << "Token Type: " << tokenTypeToString(token.m_token) << ", Valuer: " << token.m_valuer << std::endl;
+            }
+
+            break;
+
+        default:
+            std::cout << "Token Type: " << tokenTypeToString(token.m_token) << ", Lexeme: " << token.m_lexeme << std::endl;
+            break;
+    }
 }

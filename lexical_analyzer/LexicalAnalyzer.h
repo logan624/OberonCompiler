@@ -47,7 +47,13 @@ enum Token_T {
     UNKNOWN,
 
     // Literal
-    LITERAL
+    LITERAL,
+
+    // Identifier
+    IDENTIFIER,
+
+    // Number
+    NUMBER
 };
 
 // Token Struct Type
@@ -58,6 +64,7 @@ struct Token
     int m_value;
     float m_valuer;
     std::string m_literal;
+    bool m_is_int;
 };
 
 extern std::map<std::string, Token_T> reserved_words_dict;
@@ -75,10 +82,10 @@ bool isReservedWord(std::string s);
 Token_T whichToken(std::string input);
 void processComment();
 void processWhitespace();
+std::string tokenTypeToString(Token_T t);
 Token processIdentifier();
 Token processNumber();
 Token processLiteral();
-Token processBrackets();
 
 // Class Declaration
 class LexicalAnalyzer 

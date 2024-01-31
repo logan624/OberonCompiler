@@ -1,2 +1,8 @@
 MODULE One;
+'Test'
+'Test'
+oneone
+'Test'
+(* *)
+21.7
 END One.
