@@ -8,7 +8,7 @@
 // Type Declarations //
 
 // Enum type to identify different tokens that can exist in the language
-enum Token_T {
+enum class Token_T {
     // Reserved Words
     MODULE, PROCEDURE, VAR, BEGIN, END, IF, THEN, ELSE, ELSIF, WHILE, DO,
     ARRAY, RECORD, CONST, TYPE,

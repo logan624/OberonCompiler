@@ -1,11 +1,11 @@
-hw1: main.o LexicalAnalyzer.o
-	g++ -o hw1 main.o LexicalAnalyzer.o
+Gregg1: main.o LexicalAnalyzer.o
+	g++ -std=c++11 -o Gregg1 main.o LexicalAnalyzer.o
 
 main.o: main.cpp
-	g++ -c main.cpp
+	g++ -std=c++11 -c main.cpp
 
 LexicalAnalyzer.o: LexicalAnalyzer.cpp LexicalAnalyzer.h
-	g++ -c LexicalAnalyzer.cpp
+	g++ -std=c++11 -c LexicalAnalyzer.cpp
 
 clean:
-	rm hw1 main.o LexicalAnalyzer.o 
+	rm Gregg1 main.o LexicalAnalyzer.o 
