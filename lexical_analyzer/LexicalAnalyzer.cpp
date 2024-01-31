@@ -141,18 +141,17 @@ void processComment()
     // Assuming you already read `(*`, so start looking for the ending `*)`
     while (true)
     {
-        ReadNext(); // Advance to the next character
         if (c_char == '*' && n_char == ')') {
-            ReadNext(); // Consume '*'
-            ReadNext(); // Consume ')' and exit the comment
+            ReadNext();
+            ReadNext();
             break;
         }
 
         if (c_char == '\0') {
-            // End of file reached without closing comment
-            // Handle error or exit
             break;
         }
+
+        ReadNext(); // Advance to the next character
     }
     return;
 }
@@ -396,7 +395,6 @@ Token LexicalAnalyzer::GetNextToken()
                         ReadNext(); // Consume '('
                         ReadNext(); // Consume '*'
                         processComment(); // Now inside a comment
-                        ReadNext();
                         continue;
                         break;
                     }
