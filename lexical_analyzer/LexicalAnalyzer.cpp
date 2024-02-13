@@ -222,11 +222,21 @@ Token processNumber()
     raw += c_char;
     ReadNext();
 
-    while(std::isdigit(c_char) != 0 || c_char == '.')
+    while (std::isdigit(c_char) != 0 || c_char == '.')
     {
         if (c_char == '.')
         {
-            is_int = false;
+            if (std::isdigit(n_char) != 0)
+            {
+                is_int = false;
+            }
+            else
+            {
+                ret_token.m_value = std::stoi(raw);
+                ret_token.m_token = Token_T::NUMBER;
+                break;
+            }
+            
         }
 
         raw += c_char;
