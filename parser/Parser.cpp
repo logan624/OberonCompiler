@@ -294,9 +294,16 @@ void ArgList()
     MoreArgs();
 }
 
-// MoreArgs ->  ArgList | e
+// MoreArgs -> ; ArgList | e
 void MoreArgs()
 {
+    checkNextToken(Token_T::SEMICOLON, true);
+
+    if (prev_empty == true)
+    {
+        return;
+    }
+
     ArgList();
 }
 

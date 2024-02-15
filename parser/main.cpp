@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 
     // Delete and ReAllocate the Lexical Analyzer to reset file pos
     delete lex;
-    lex = new LexicalAnalyzer("test2.txt");
+    lex = new LexicalAnalyzer(prog_file);
 
     Prog();
 
