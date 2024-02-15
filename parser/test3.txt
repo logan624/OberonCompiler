@@ -1,0 +1,13 @@
+MODULE Main; (**)
+
+(**) PROCEDURE Proc1; (**)
+    VAR x,y,z:(**)INTEGER;
+(**)BEGIN(* *)
+    (**)y := 10;
+    z := 20;(**)
+    x := y * z(**);
+    Write(x);(**)
+(**)END Proc1;(**)
+(**)BEGIN(**)
+    Proc1;(**)
+END Main(**).(**)
