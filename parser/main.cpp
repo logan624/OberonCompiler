@@ -27,23 +27,23 @@ int main(int argc, char* argv[])
 {
     std::string prog_file;
 
-    // if (argc != 2)
-    // {
-    //     std::cout << "Usage: " << argv[0] << " filename" << std::endl;
-    //     return 100;
-    // }
-    // else
-    // {
-    //     prog_file = argv[1];
-    // }
+    if (argc != 2)
+    {
+        std::cout << "Usage: " << argv[0] << " filename" << std::endl;
+        return 100;
+    }
+    else
+    {
+        prog_file = argv[1];
+    }
 
     // Create instance of the lexical analyzer
-    LexicalAnalyzer* lex = new LexicalAnalyzer("test2.txt");
+    LexicalAnalyzer* lex = new LexicalAnalyzer(prog_file);
     
     while (token.m_token != Token_T::EOF_T)
     {
         lex->GetNextToken();
-        lex->DisplayToken();
+        // lex->DisplayToken();
     }
 
     // Delete and ReAllocate the Lexical Analyzer to reset file pos

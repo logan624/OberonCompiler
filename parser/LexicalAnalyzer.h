@@ -19,6 +19,7 @@ enum class Token_T {
     INTEGER, REAL, CHAR,
 
     // Relational Operators
+    EQUAL_SIGN,
     RELOP,
 
     // Addition Subtraction Operators

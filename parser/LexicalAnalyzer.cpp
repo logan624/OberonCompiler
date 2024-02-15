@@ -34,7 +34,7 @@ std::map<std::string, Token_T> reserved_words_dict = {
         {"CHAR", Token_T::CHAR},
         
         // Relational Operators
-        {"=", Token_T::RELOP},
+        {"=", Token_T::EQUAL_SIGN},
         {"#", Token_T::RELOP},
         {"<", Token_T::RELOP},
         {"<=", Token_T::RELOP},    
@@ -438,9 +438,15 @@ Token LexicalAnalyzer::GetNextToken()
                     break;
 
                 // Relational Operators
+                // Added a token for the equal sign since it can be used for assignment of values to constants
+                case '=':
+                    temp += c_char;
+                    ret_token.m_lexeme = temp;
+                    ret_token.m_token = whichToken(temp);
+                    ReadNext();
+                    break;
                 case '<':
                 case '>':
-                case '=':
                 case '#':
                     temp += c_char;
                     ret_token.m_lexeme = temp;
@@ -521,6 +527,7 @@ std::string tokenTypeToString(Token_T t)
         {Token_T::INTEGER, "INTEGERT"},
         {Token_T::REAL, "REALT"},
         {Token_T::CHAR, "CHART"},
+        {Token_T::EQUAL_SIGN, "EQUAL_SIGN"},
         {Token_T::RELOP, "RELOPT"},
         {Token_T::ADDOP, "ADDOPT"},
         {Token_T::MULOP, "MULOPT"},
