@@ -2,7 +2,7 @@
  * Project Name: Gregg1
  * File Name: main.cpp
  * Author: Logan Gregg
- * Date: 1/31/2024
+ * Date: 2/16/2024
  *
  * Description:
  * Lexical Analyzer Assignment for CSC 446
@@ -13,8 +13,8 @@
  *
  * Run Instructions:
  * After building, the project can be run from the command line as follows:
- * ./Gregg1 <Name of file to read from> 
- * Example: ./GreggHw1 test1.txt
+ * ./Gregg2 <Name of file to read from> 
+ * Example: ./Gregg2 test1.txt
  */
 
 #include <iostream>
