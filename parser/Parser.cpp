@@ -331,17 +331,17 @@ void StatementPart()
 // SeqOfStatements -> e
 void SeqOfStatements()
 {
-    while(token.m_token != Token_T::END)
-    {
-        LexicalAnalyzer::GetNextToken();
+    // while(token.m_token != Token_T::END)
+    // {
+    //     LexicalAnalyzer::GetNextToken();
 
-        if (token.m_token == Token_T::EOF_T)
-        {
-            break;
-        }
-    }
+    //     if (token.m_token == Token_T::EOF_T)
+    //     {
+    //         break;
+    //     }
+    // }
 
-    prev_empty = true;
+    // prev_empty = true;
     
     return;
 
