@@ -327,7 +327,7 @@ LexicalAnalyzer::LexicalAnalyzer(std::string filename)
 {
     m_file = filename;
     file_index = 0;
-    line_no = 0;
+    line_no = 1;
 
     std::ifstream input_file(m_file);
 

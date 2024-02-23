@@ -5,11 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Lexical Test",
+            "name": "Parser Test",
             "type": "cppdbg",
             "request": "launch",
-            "program": "hw1",
-            "args": ["test2.txt"],
+            "program": "Gregg2",
+            "args": ["test34.obr"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

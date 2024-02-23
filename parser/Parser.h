@@ -39,10 +39,10 @@ void Value();
 void ProcPart();
 
 // ProcedureDecl -> ProcHeading ; ProcBody idt ;
-void ProcedureDecl();
+bool ProcedureDecl();
 
 // ProcHeading -> proct idt Args
-void ProcHeading();
+bool ProcHeading();
 
 // ProcBody -> DeclarativePart StatementPart endt
 void ProcBody();

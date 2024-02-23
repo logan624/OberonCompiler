@@ -110,6 +110,8 @@ void Prog()
     StatementPart();
     checkNextToken(Token_T::END, false);
     checkNextToken(Token_T::IDENTIFIER, false);
+    checkNextToken(Token_T::PERIOD, false);
+    checkNextToken(Token_T::EOF_T, false);
 }
 
 // DeclarativePart -> ConstPart VarPart ProcPart
@@ -133,7 +135,7 @@ void ConstPart()
     ConstTail();
 }
 
-// ConstTail -> idt = Value  ConstTail | e
+// ConstTail -> idt = Value ; ConstTail | e
 void ConstTail()
 {
     checkNextToken(Token_T::IDENTIFIER, true);
@@ -145,6 +147,7 @@ void ConstTail()
 
     checkNextToken(Token_T::EQUAL_SIGN, false);
     Value();
+    checkNextToken(Token_T::SEMICOLON, false);
     ConstTail();
 }
 
@@ -169,19 +172,12 @@ void VarTail()
     LexicalAnalyzer::GetNextToken();
     prev_empty = true;
 
-    Token t = token;
-
     if (token.m_token != Token_T::IDENTIFIER)
     {
         return;
     }
 
     IdentifierList();
-
-    // if (prev_empty)
-    // {
-    //     return;
-    // }
 
     checkNextToken(Token_T::COLON, false);
     TypeMark();
@@ -224,39 +220,44 @@ void Value()
 // ProcPart -> ProcedureDecl ProcPart | e
 void ProcPart()
 {
-    // Token t = token;
-    // // Check if ProcPart is empty
-    // LexicalAnalyzer::GetNextToken();
-    // Token t2 = token;
-    // prev_empty = true;
-
-    if (token.m_token != Token_T::PROCEDURE)
+    bool ret = false;
+    ret = ProcedureDecl();
+    if (ret == true)
     {
         return;
-    } 
-
-    ProcedureDecl();
+    }
     ProcPart();
-
-
 }
 
 // ProcedureDecl -> ProcHeading ; ProcBody idt ;
-void ProcedureDecl()
+bool ProcedureDecl()
 {
-    ProcHeading();
+    bool ret_status = false;
+    ret_status = ProcHeading();
+    if (ret_status == true)
+    {
+        return true;
+    }
     checkNextToken(Token_T::SEMICOLON, false);
     ProcBody();
     checkNextToken(Token_T::IDENTIFIER, false);
     checkNextToken(Token_T::SEMICOLON, false);
+    return false;
 }
 
 // ProcHeading -> proct idt Args
-void ProcHeading()
+bool ProcHeading()
 {
-    checkNextToken(Token_T::PROCEDURE, false);
+    checkNextToken(Token_T::PROCEDURE, true);
+    Token t = token;
+    if (prev_empty == true)
+    {
+        prev_empty = false;
+        return true;
+    }
     checkNextToken(Token_T::IDENTIFIER, false);
     Args();
+    return false;
 }
 
 // ProcBody -> DeclarativePart StatementPart endt
@@ -316,10 +317,12 @@ void Mode()
 // StatementPart -> begint SeqOfStatements | e
 void StatementPart()
 {
-    // Token t = token;
+    Token test = token;
+
     // prev_empty = true;
     checkNextToken(Token_T::BEGIN, true);
-
+// 
+    test = token;
     if (prev_empty)
     {
         return;

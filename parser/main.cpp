@@ -53,5 +53,6 @@ int main(int argc, char* argv[])
     Prog();
 
     delete lex;
+    lex = nullptr;
 
 }
