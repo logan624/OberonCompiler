@@ -76,32 +76,38 @@ TableRecord * SymbolTable::Lookup(std::string lex)
 // DeleteDepth(depth) - delete is passed the depth and deletes all records that are in the table at that depth.
 void SymbolTable::DeleteDepth(int depth)
 {
-    for (int i = 0; i < m_table.size(); i++) {
-        
-        TableRecord * curr_node = m_table[i];
-        TableRecord * prev_node = nullptr;
+    TableRecord * curr;
+    TableRecord * prev;
+    TableRecord * temp;
 
-        while (curr_node != nullptr)
+    for (int i = 0; i < m_table.size(); i++)
+    {
+        
+        curr = m_table[i];
+        prev = nullptr;
+
+        while (curr != nullptr)
         {
-            if (curr_node->m_depth == depth)
+            if (curr->m_depth == depth)
             {
-                if (prev_node == nullptr)
+                if (prev == nullptr)
                 {
-                    m_table[i] = curr_node->m_next;
+                    m_table[i] = curr->m_next;
                 }
                 else
                 {
-                    prev_node->m_next = curr_node->m_next;
+                    prev->m_next = curr->m_next;
                 }
 
-                TableRecord * temp = curr_node;
-                curr_node = curr_node->m_next;
+                temp = curr;
+                curr = curr->m_next;
+
                 delete temp;
             }
             else
             {
-                prev_node = curr_node;
-                curr_node = curr_node->m_next;
+                prev = curr;
+                curr = curr->m_next;
             }
         }
     }
