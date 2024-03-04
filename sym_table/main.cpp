@@ -1,11 +1,11 @@
 /**
- * Project Name: Gregg1
+ * Project Name: Gregg4
  * File Name: main.cpp
  * Author: Logan Gregg
- * Date: 2/16/2024
+ * Date: 3/4/2024
  *
  * Description:
- * Lexical Analyzer Assignment for CSC 446
+ * Symbol Assignment for CSC 446
  *
  * Build Instructions:
  * This project can be built using Make with the following command:
@@ -13,8 +13,8 @@
  *
  * Run Instructions:
  * After building, the project can be run from the command line as follows:
- * ./Gregg2 <Name of file to read from> 
- * Example: ./Gregg2 test1.txt
+ * ./Gregg4 
+ * Example: ./Gregg4
  */
 
 #include <iostream>
@@ -98,5 +98,62 @@ int main(int argc, char* argv[])
     st.WriteTable(1);
     std::cout << std::endl << "Printing out all symbols at depth 2" << std::endl;
     st.WriteTable(2);
+
+    std::cout << std::endl << "Looking up 'cat'" << std::endl;
+    std::cout << "Looking up 'dog'" << std::endl;
+    TableRecord * tr = st.Lookup("dog");
+    if (tr != nullptr)
+    {
+        std::cout << tr->m_lexeme << " found!" << std::endl;
+    }
+    std::cout << "Looking up 'lizard'" << std::endl;
+    tr = st.Lookup("lizard");
+    if (tr != nullptr)
+    {
+        std::cout << tr->m_lexeme << " found!" << std::endl;
+    }
+    std::cout << "Looking up 'otter'" << std::endl;
+    tr = st.Lookup("otter");
+    if (tr != nullptr)
+    {
+        std::cout << tr->m_lexeme << " found!" << std::endl;
+    }
+    std::cout << "Looking up 'platypus'" << std::endl;
+    tr = st.Lookup("platypus");
+    if (tr != nullptr)
+    {
+        std::cout << tr->m_lexeme << " found!" << std::endl;
+    }
+    std::cout << "Looking up 'wasp'" << std::endl;
+    tr = st.Lookup("wasp");
+    if (tr != nullptr)
+    {
+        std::cout << tr->m_lexeme << " found!" << std::endl;
+    }
+    
+    std::cout << std::endl << "Deleting Depth 2!" << std::endl;
+    st.DeleteDepth(2);
+
+    std::cout << std::endl << "Looking up 'platypus'" << std::endl;
+    tr = st.Lookup("platypus");
+    if (tr != nullptr)
+    {
+        std::cout << tr->m_lexeme << " found!" << std::endl;
+    }
+    else
+    {
+        std::cout << "'platypus' not found!" << std::endl;
+    }
+
+    std::cout << "Looking up 'wasp'" << std::endl;
+    tr = st.Lookup("wasp");
+    if (tr != nullptr)
+    {
+        std::cout << tr->m_lexeme << " found!" << std::endl;
+    }
+    else
+    {
+        std::cout << "'wasp' not found!" << std::endl << std::endl;
+    }
 
 }
