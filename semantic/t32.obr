@@ -1,0 +1,11 @@
+MODULE Main;
+PROCEDURE Proc1; 
+BEGIN
+END Proc1; 
+
+PROCEDURE Proc2;
+BEGIN
+END Proc2;
+
+BEGIN
+END Main.
