@@ -256,11 +256,34 @@ void VarTail()
 
     VarTail(vars);
 
+    // std::cout << "SIZE: " << vars.size() << std::endl;
+    // std::cout << "PRINTING TOKENS TO INSERT:" << std::endl;
+
+    // for (Token var : vars )
+    // {
+    //     std::cout << var.m_lexeme << std::endl;
+    // }
+
+    // std::cout << "DONE" << std::endl;
+
     // Insert the variables as this type into the symbol table
     for (long int i = 0; i < vars.size(); i++)
     {
         TableRecord * p_rec;
         TableRecord rec;
+
+        if (st.Lookup(vars[i].m_lexeme) == nullptr)
+        {
+            st.Insert(vars[i].m_lexeme, vars[i], global_depth);
+        }
+        else
+        {
+            std::cout << "Error: '" << vars[i].m_lexeme << "' already at depth " << global_depth << std::endl;
+            exit(109);
+        }
+
+        p_rec = st.Lookup(vars[i].m_lexeme);
+
         rec.m_entry = Entry_Type::VAR;
         rec.m_lexeme = vars[i].m_lexeme;
         rec.m_token = vars[i];
@@ -270,9 +293,6 @@ void VarTail()
         rec.item.variable.m_size = typeToSize(rec.item.variable.m_type, vars[i]);
 
         p_rec = &rec;
-
-        st.Insert(rec.m_lexeme, rec.m_token, rec.m_depth);
-
     }
 
     st.WriteTable(global_depth);
@@ -396,6 +416,7 @@ bool ProcHeading()
     std::vector<Token> params_to_insert = Args();
 
     // Increment the global depth, and insert the parameters
+    std::cout << "Test!" << std::endl;
     global_depth++;
     
     for (int i = 0; i < params_to_insert.size(); i++)

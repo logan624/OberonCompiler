@@ -3,6 +3,8 @@
 #include <list>
 #include <vector>
 
+extern int global_depth;
+
 // For this assignment you are to write a module that will maintain a symbol table for your compiler.  Use the linked implementation of a hash table.  The unit should provide the following operations which must be named exactly as listed below:
 
 // Constructor & Destructor
@@ -62,7 +64,7 @@ TableRecord * SymbolTable::Lookup(std::string lex)
     
     while (ret != nullptr)
     {
-        if (ret->m_lexeme == lex)
+        if (ret->m_lexeme == lex && ret->m_depth == global_depth)
         {
             return ret;
         }

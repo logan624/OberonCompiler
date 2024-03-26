@@ -6,6 +6,8 @@
 
 #include "LexicalAnalyzer.h"
 
+extern int global_depth;
+
 const int TABLE_SIZE = 211;
 
 enum class Var_T {INTEGER, REAL, CHAR};
