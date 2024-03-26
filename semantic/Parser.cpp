@@ -190,7 +190,39 @@ void ConstPart()
 
     for (long int i = 0; i < constants.size(); i++)
     {
-        std::cout << constants[i].first.m_lexeme << std::endl;
+        TableRecord * p_rec;
+        TableRecord rec;
+
+        if (st.Lookup(constants[i].first.m_lexeme) == nullptr)
+        {
+            st.Insert(constants[i].first.m_lexeme, constants[i].first, global_depth);
+        }
+        else
+        {
+            std::cout << "Error: '" << constants[i].first.m_lexeme << "' already at depth " << global_depth << std::endl;
+            exit(109);
+        }
+
+        p_rec = st.Lookup(constants[i].first.m_lexeme);
+
+        p_rec->m_entry = Entry_Type::CONST;
+        p_rec->m_lexeme = constants[i].first.m_lexeme;
+        p_rec->m_token = constants[i].first;
+        p_rec->m_depth = global_depth;
+        p_rec->item.constant.m_is_int = constants[i].second.m_is_int;
+
+        if (constants[i].second.m_is_int)
+        {
+            p_rec->item.constant.m_value.m_int_val = constants[i].second.m_value;
+        }
+        else
+        {
+            p_rec->item.constant.m_value.m_real_val = constants[i].second.m_valuer;
+        }
+        // p_rec->item.constant.m_offset = -1;
+        // p_rec->item.constant.m_size = typeToSize(rec.item.constant.m_type, constants[i].first);
+
+        p_rec = &rec;
     }
 }
 
@@ -284,13 +316,13 @@ void VarTail()
 
         p_rec = st.Lookup(vars[i].m_lexeme);
 
-        rec.m_entry = Entry_Type::VAR;
-        rec.m_lexeme = vars[i].m_lexeme;
-        rec.m_token = vars[i];
-        rec.m_depth = global_depth;
-        rec.item.variable.m_type = tokenTypeToVarType(vars[i].m_token);
-        rec.item.variable.m_offset = -1;
-        rec.item.variable.m_size = typeToSize(rec.item.variable.m_type, vars[i]);
+        p_rec->m_entry = Entry_Type::VAR;
+        p_rec->m_lexeme = vars[i].m_lexeme;
+        p_rec->m_token = vars[i];
+        p_rec->m_depth = global_depth;
+        p_rec->item.variable.m_type = tokenTypeToVarType(vars[i].m_token);
+        p_rec->item.variable.m_offset = -1;
+        p_rec->item.variable.m_size = typeToSize(p_rec->item.variable.m_type, vars[i]);
 
         p_rec = &rec;
     }
