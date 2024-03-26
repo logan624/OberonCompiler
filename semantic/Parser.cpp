@@ -413,7 +413,6 @@ bool ProcHeading()
     std::vector<Token> params_to_insert = Args();
 
     // Increment the global depth, and insert the parameters
-    std::cout << "Test!" << std::endl;
     global_depth++;
     
     for (int i = 0; i < params_to_insert.size(); i++)
