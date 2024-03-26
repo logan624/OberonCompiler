@@ -6,6 +6,35 @@ bool prev_empty;
 SymbolTable st;
 int global_depth;
 
+int typeToSize(Var_T type, Token t)
+{
+    switch(type)
+    {
+        case Var_T::CHAR:
+            return 1;
+        case Var_T::INTEGER:
+            return 2;
+        case Var_T::REAL:
+            return 4;
+        default:
+            return 4;
+    }
+}
+
+Var_T tokenTypeToVarType(Token_T t)
+{
+    switch(t)
+    {
+        case Token_T::REAL:
+            return Var_T::REAL;
+        case Token_T::CHAR:
+            return Var_T::CHAR;
+        case Token_T::INTEGER:
+            return Var_T::INTEGER;
+        default:
+            return Var_T::INTEGER;
+    }
+}
 
 void checkNextToken(Token_T expected, bool empty_ok)
 {
@@ -115,11 +144,25 @@ void Prog()
     std::cout << module_name.m_lexeme << std::endl;
 
     checkNextToken(Token_T::SEMICOLON, false);
+
+    global_depth++;
+
     DeclarativePart();
     StatementPart();
     checkNextToken(Token_T::END, false);
     checkNextToken(Token_T::IDENTIFIER, false);
     checkNextToken(Token_T::PERIOD, false);
+
+    while (global_depth >= 1)
+    {
+        st.WriteTable(global_depth);
+        st.DeleteDepth(global_depth);
+
+        std::cout << "Deleted Depth " << global_depth << std::endl; 
+
+        global_depth--;
+    }
+
     checkNextToken(Token_T::EOF_T, false);
 }
 
@@ -204,22 +247,62 @@ void VarTail()
     }
 
     std::vector<Token> vars; 
-    Token_T var_type;
 
     vars = IdentifierList();
 
     checkNextToken(Token_T::COLON, false);
-    var_type = TypeMark();
+    TypeMark();
+    checkNextToken(Token_T::SEMICOLON, false);
+
+    VarTail(vars);
 
     // Insert the variables as this type into the symbol table
     for (long int i = 0; i < vars.size(); i++)
     {
-        std::cout << vars[i].m_lexeme << std::endl; 
+        TableRecord * p_rec;
+        TableRecord rec;
+        rec.m_entry = Entry_Type::VAR;
+        rec.m_lexeme = vars[i].m_lexeme;
+        rec.m_token = vars[i];
+        rec.m_depth = global_depth;
+        rec.item.variable.m_type = tokenTypeToVarType(vars[i].m_token);
+        rec.item.variable.m_offset = -1;
+        rec.item.variable.m_size = typeToSize(rec.item.variable.m_type, vars[i]);
+
+        p_rec = &rec;
+
+        st.Insert(rec.m_lexeme, rec.m_token, rec.m_depth);
+
     }
+
+    st.WriteTable(global_depth);
+
+}
+
+void VarTail(std::vector<Token> & vars)
+{
+    LexicalAnalyzer::GetNextToken();
+    prev_empty = true;
+
+    if (token.m_token != Token_T::IDENTIFIER)
+    {
+        return;
+    }
+
+    std::vector<Token> more_vars; 
+    more_vars = IdentifierList();
+
+    for (Token var : more_vars)
+    {
+        vars.push_back(var);
+    }
+
+    checkNextToken(Token_T::COLON, false);
+    TypeMark();
 
     checkNextToken(Token_T::SEMICOLON, false);
 
-    VarTail();
+    VarTail(more_vars);
 
 }
 
@@ -312,8 +395,9 @@ bool ProcHeading()
 
     std::vector<Token> params_to_insert = Args();
 
-    // std::cout << "Size of params:  " << params_to_insert.size() << std::endl;
-
+    // Increment the global depth, and insert the parameters
+    global_depth++;
+    
     for (int i = 0; i < params_to_insert.size(); i++)
     {
         std::cout << params_to_insert[i].m_lexeme << std::endl;
@@ -331,6 +415,14 @@ void ProcBody()
 
     Token t = token;
     checkNextToken(Token_T::END, false);
+
+    // Do at the end of each procedure
+    st.WriteTable(global_depth);
+    st.DeleteDepth(global_depth);
+
+    std::cout << "Deleted Depth " << global_depth << std::endl;
+
+    global_depth--;
 }
 
 // Args -> ( ArgList ) | e

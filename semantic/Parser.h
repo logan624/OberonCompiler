@@ -28,6 +28,8 @@ void VarPart();
 // VarTail -> IdentifierList : TypeMark ; VarTail | e
 void VarTail();
 
+void VarTail(std::vector<Token> & vars);
+
 // IdentifierList -> idt | IdentifierList , idt
 std::vector<Token> IdentifierList();
 
@@ -66,3 +68,6 @@ void StatementPart();
 
 // SeqOfStatements -> e
 void SeqOfStatements();
+
+int typeToSize(Var_T type, Token t);
+Var_T tokenTypeToVarType(Token_T);

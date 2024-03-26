@@ -10,10 +10,11 @@ const int TABLE_SIZE = 211;
 
 enum class Var_T {INTEGER, REAL, CHAR};
 enum class Param_Mode {VAL, REF};
+enum class Entry_Type {CONST, VAR, FUNCTION};
 
 struct TableRecord {
     TableRecord * m_next;
-
+    Entry_Type m_entry;
     std::string m_lexeme;
     Token m_token;
 
