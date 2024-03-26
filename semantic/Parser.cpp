@@ -294,9 +294,6 @@ void VarTail()
 
         p_rec = &rec;
     }
-
-    st.WriteTable(global_depth);
-
 }
 
 void VarTail(std::vector<Token> & vars)
