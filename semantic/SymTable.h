@@ -14,6 +14,13 @@ enum class Var_T {INTEGER, REAL, CHAR};
 enum class Param_Mode {VAL, REF};
 enum class Entry_Type {CONST, VAR, FUNCTION};
 
+struct ParameterInfo
+{
+    Param_Mode m_mode;
+    Var_T m_type;
+    Token m_token; 
+};
+
 struct TableRecord {
     TableRecord * m_next;
     Entry_Type m_entry;
@@ -46,8 +53,12 @@ struct TableRecord {
         {
             int local_vars_size;
             int num_params;
-            std::vector<Var_T> * m_param_types;
-            std::vector<Param_Mode> * m_param_modes;
+            
+            std::vector<ParameterInfo> * param_info;
+            
+            // std::vector<std::string> * m_param_lexemes;
+            // std::vector<Var_T> * m_param_types;
+            // std::vector<Param_Mode> * m_param_modes;
 
             // Procedure()
             // {

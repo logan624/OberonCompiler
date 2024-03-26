@@ -52,16 +52,16 @@ bool ProcHeading();
 void ProcBody();
 
 // Args -> ( ArgList ) | e
-std::vector<Token> Args();
+std::vector<ParameterInfo> Args();
 
 // ArgList -> Mode IdentifierList : TypeMark MoreArgs
-std::vector<Token> ArgList();
+std::vector<ParameterInfo> ArgList();
 
 // MoreArgs -> ; ArgList | e
-std::vector<Token> MoreArgs();
+void MoreArgs(std::vector<ParameterInfo> & params);
 
 // Mode -> vart | e
-void Mode();
+Param_Mode Mode();
 
 // StatementPart -> begint SeqOfStatements | e
 void StatementPart();

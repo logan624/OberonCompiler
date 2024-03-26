@@ -219,8 +219,6 @@ void ConstPart()
         {
             p_rec->item.constant.m_value.m_real_val = constants[i].second.m_valuer;
         }
-        // p_rec->item.constant.m_offset = -1;
-        // p_rec->item.constant.m_size = typeToSize(rec.item.constant.m_type, constants[i].first);
 
         p_rec = &rec;
     }
@@ -440,17 +438,61 @@ bool ProcHeading()
     }
     checkNextToken(Token_T::IDENTIFIER, false);
 
-    std::cout << token.m_lexeme << std::endl;
+    // Insert the Procedure - FIX IF NEEDED
+    TableRecord * p_to_proc;
+    st.Insert(token.m_lexeme, token, global_depth);
+    p_to_proc = st.Lookup(token.m_lexeme);
 
-    std::vector<Token> params_to_insert = Args();
+    std::vector<ParameterInfo> params_to_insert = Args();
 
     // Increment the global depth, and insert the parameters
     global_depth++;
     
     for (int i = 0; i < params_to_insert.size(); i++)
     {
-        std::cout << params_to_insert[i].m_lexeme << std::endl;
+        Token p_token_info = params_to_insert[i].m_token;
+
+        TableRecord * p_rec;
+        TableRecord rec;
+
+        if (st.Lookup(p_token_info.m_lexeme) == nullptr)
+        {
+            st.Insert(p_token_info.m_lexeme, p_token_info, global_depth);
+        }
+        else
+        {
+            std::cout << "Error: '" << p_token_info.m_lexeme << "' already at depth " << global_depth << std::endl;
+            exit(109);
+        }
+
+        p_rec = st.Lookup(p_token_info.m_lexeme);
+
+        p_rec->m_entry = Entry_Type::VAR; // this part will be conditional!
+        p_rec->m_lexeme = p_token_info.m_lexeme;
+        p_rec->m_token = p_token_info;
+        p_rec->m_depth = global_depth;
+        p_rec->item.variable.m_type = tokenTypeToVarType(p_token_info.m_token);
+        p_rec->item.variable.m_offset = -1;
+        p_rec->item.variable.m_size = typeToSize(p_rec->item.variable.m_type, p_token_info);
+
+        p_rec = &rec;
     }
+
+    // Set all the procedure struct fields using the params_to_insert function
+    p_to_proc->m_entry = Entry_Type::FUNCTION;
+    
+    // TODO - Set the size appropriately by calculating the sum of all vars sizes
+    int params_size = 0;
+    for(ParameterInfo info : params_to_insert)
+    {
+        params_size += typeToSize(info.m_type, info.m_token);
+    }
+    p_to_proc->item.procedure.local_vars_size = params_size;
+
+    // Set the number of parameters
+    p_to_proc->item.procedure.num_params = params_to_insert.size();
+
+    p_to_proc->item.procedure.param_info = &params_to_insert;
 
     return false;
 }
@@ -462,7 +504,6 @@ void ProcBody()
     prev_empty = true;
     StatementPart();
 
-    Token t = token;
     checkNextToken(Token_T::END, false);
 
     // Do at the end of each procedure
@@ -475,9 +516,9 @@ void ProcBody()
 }
 
 // Args -> ( ArgList ) | e
-std::vector<Token> Args()
+std::vector<ParameterInfo> Args()
 {
-    std::vector<Token> params;
+    std::vector<ParameterInfo> params;
     
     checkNextToken(Token_T::L_SYMBOL, true);
     
@@ -494,51 +535,65 @@ std::vector<Token> Args()
 }
 
 // ArgList -> Mode IdentifierList : TypeMark MoreArgs
-std::vector<Token> ArgList()
+std::vector<ParameterInfo> ArgList()
 {
-    std::vector<Token> params;
+    std::vector<Token> param_names;
+    std::vector<ParameterInfo> params;
     
-    Mode();
-    params = IdentifierList();
+    Param_Mode mode = Mode();
+    param_names = IdentifierList();
     checkNextToken(Token_T::COLON, false);
-    TypeMark();
+    Token_T p_type = TypeMark();
+    Var_T param_type = tokenTypeToVarType(p_type);
 
-    std::vector<Token> more_params = MoreArgs();
-
-    for (long int i = 0; i < more_params.size(); i++)
+    // Put all of the needed info into a struct
+    for (Token p : param_names)
     {
-        params.push_back(more_params[i]);
+        ParameterInfo info;
+        info.m_mode = mode;
+        info.m_type = param_type;
+        info.m_token = p;
+
+        params.push_back(info);
     }
+
+    MoreArgs(params);
 
     return params;
 }
 
 // MoreArgs -> ; ArgList | e
-std::vector<Token> MoreArgs()
+void MoreArgs(std::vector<ParameterInfo> & params)
 {
-    std::vector<Token> more_args;
     
     checkNextToken(Token_T::SEMICOLON, true);
 
     if (prev_empty == true)
     {
-        return more_args;
+        return;
     }
 
-    std::vector<Token> extra_args = ArgList();
+    std::vector<ParameterInfo> extra_args = ArgList();
 
     for (long int i = 0; i < extra_args.size(); i++)
     {
-        more_args.push_back(extra_args[i]);
+        params.push_back(extra_args[i]);
     }
-
-    return more_args;
 }
 
 // Mode -> vart | e
-void Mode()
+Param_Mode Mode()
 {
     checkNextToken(Token_T::VAR, true);
+
+    if (token.m_token == Token_T::VAR)
+    {
+        return Param_Mode::REF;
+    }
+    else
+    {
+        return Param_Mode::VAL;
+    }
 }
 
 // StatementPart -> begint SeqOfStatements | e
@@ -546,10 +601,8 @@ void StatementPart()
 {
     Token test = token;
 
-    // prev_empty = true;
     checkNextToken(Token_T::BEGIN, true);
-// 
-    test = token;
+
     if (prev_empty)
     {
         return;
