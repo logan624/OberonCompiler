@@ -156,7 +156,7 @@ void SymbolTable::WriteTable(int depth)
             node = node->m_next;
          }
     }
-
+    std::cout << "-----------------------------------------------" << std::endl;
     std::cout << std::endl;
 }
 
@@ -193,7 +193,7 @@ void SymbolTable::PrintConstant(TableRecord * tr)
     }
     else
     {
-        std::cout << "\tType:       FLOAT" << std::endl;
+        std::cout << "\tType:       REAL" << std::endl;
         std::cout << "\tValue:      " << tr->item.constant.m_value.m_real_val << std::endl;
     }
 } 
