@@ -490,8 +490,6 @@ std::pair<bool, TableRecord *> ProcHeading()
         node->m_type = params_to_insert[i].m_type;
         node->m_token = params_to_insert[i].m_token;
         node->next_node = nullptr;
-
-        prev = node;
         
         if (i == 0)
         {
@@ -504,13 +502,6 @@ std::pair<bool, TableRecord *> ProcHeading()
 
         prev = node;
     }
-
-    // ParameterInfo* node = head;
-    // while(node != nullptr) // Changed to check node itself, not node->next_node
-    // {
-    //     std::cout << "Node: " << node->m_token.m_lexeme << std::endl; // Added std::endl for clarity in output
-    //     node = node->next_node;
-    // }
 
     // Increment the global depth, and insert the parameters
     global_depth++;

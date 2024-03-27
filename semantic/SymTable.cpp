@@ -207,17 +207,14 @@ void SymbolTable::PrintProc(TableRecord * tr)
     std::cout << "\tNumber of Parameters: " << tr->item.procedure.num_params << std::endl;
     std::cout << "\tParams: " << std::endl;
     
-    // for (ParameterInfo pi : tr->item.procedure.param_info)
-    // {
-    //     std::cout << "Test!" << std::endl;
-    // }
-
-    // ParameterInfo* node = tr->item.procedure.param_info;
-    // while(node != nullptr) // Changed to check node itself, not node->next_node
-    // {
-    //     std::cout << "Node: " << node->m_token.m_lexeme << std::endl; // Added std::endl for clarity in output
-    //     node = node->next_node;
-    // }
+    ParameterInfo* node = tr->item.procedure.param_info;
+    while(node != nullptr) // Changed to check node itself, not node->next_node
+    {
+        std::cout << "\t\t" << node->m_token.m_lexeme << std::endl;
+        std::cout << "\t\t\tMode: " << ParamModeToString(node->m_mode) << std::endl;
+        std::cout << "\t\t\tType: " << VarTypeToString(node->m_type) << std::endl;
+        node = node->next_node;
+    }
 
 }
 
@@ -280,4 +277,3 @@ std::string EntryTypeToString(Entry_Type et)
             return "";
     }
 }
-
