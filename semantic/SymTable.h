@@ -8,6 +8,7 @@
 
 extern int global_depth;
 
+// Table Size for hashing
 const int TABLE_SIZE = 211;
 
 enum class Var_T {INTEGER, REAL, CHAR};

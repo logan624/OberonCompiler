@@ -28,7 +28,7 @@ int VarPart();
 // VarTail -> IdentifierList : TypeMark ; VarTail | e
 int VarTail();
 
-void VarTail(std::vector<Token> & vars);
+void VarTail(std::vector<std::pair<Token, Token_T>> & vars);
 
 // IdentifierList -> idt | IdentifierList , idt
 std::vector<Token> IdentifierList();

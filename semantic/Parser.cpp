@@ -5,6 +5,7 @@
 bool prev_empty;
 SymbolTable st;
 int global_depth;
+int curr_scope_offset;
 
 int typeToSize(Var_T type, Token t)
 {
@@ -285,51 +286,57 @@ int VarTail()
         return 0;
     }
 
-    std::vector<Token> vars; 
-
+    std::vector<std::pair<Token, Token_T>> vars_to_insert; 
+    std::vector<Token> 
     vars = IdentifierList();
 
     checkNextToken(Token_T::COLON, false);
-    TypeMark();
+    Token_T type = TypeMark();
     checkNextToken(Token_T::SEMICOLON, false);
 
-    VarTail(vars);
+    for(Token var : vars)
+    {
+        vars_to_insert.push_back(std::pair<Token, Token_T>(var, type));
+    }
+
+    VarTail(vars_to_insert);
 
     int size_of_vars = 0;
 
     // Insert the variables as this type into the symbol table
-    for (long int i = 0; i < vars.size(); i++)
+    for (long int i = 0; i < vars_to_insert.size(); i++)
     {
         TableRecord * p_rec;
         TableRecord rec;
 
-        if (st.Lookup(vars[i].m_lexeme) == nullptr)
+        if (st.Lookup(vars_to_insert[i].first.m_lexeme) == nullptr)
         {
-            st.Insert(vars[i].m_lexeme, vars[i], global_depth);
+            st.Insert(vars_to_insert[i].first.m_lexeme, vars_to_insert[i].first, global_depth);
         }
         else
         {
-            std::cout << "ERROR - MULTIPLE DECLARATION: '" << vars[i].m_lexeme << "' already at depth " << global_depth << std::endl;
+            std::cout << "ERROR - MULTIPLE DECLARATION: '" << vars_to_insert[i].first.m_lexeme << "' already at depth " << global_depth << std::endl;
             exit(109);
         }
 
-        p_rec = st.Lookup(vars[i].m_lexeme);
+        p_rec = st.Lookup(vars_to_insert[i].first.m_lexeme);
 
         p_rec->m_entry = Entry_Type::VAR;
-        p_rec->m_lexeme = vars[i].m_lexeme;
-        p_rec->m_token = vars[i];
+        p_rec->m_lexeme = vars_to_insert[i].first.m_lexeme;
+        p_rec->m_token = vars_to_insert[i].first;
         p_rec->m_depth = global_depth;
-        p_rec->item.variable.m_type = tokenTypeToVarType(vars[i].m_token);
-        p_rec->item.variable.m_offset = -1;
-        p_rec->item.variable.m_size = typeToSize(p_rec->item.variable.m_type, vars[i]);
-
+        p_rec->item.variable.m_type = tokenTypeToVarType(vars_to_insert[i].second);
+        p_rec->item.variable.m_offset = curr_scope_offset;
+        p_rec->item.variable.m_size = typeToSize(p_rec->item.variable.m_type, vars_to_insert[i].first);
+        
+        curr_scope_offset += p_rec->item.variable.m_size;
         size_of_vars += p_rec->item.variable.m_size;
     }
 
     return size_of_vars;
 }
 
-void VarTail(std::vector<Token> & vars)
+void VarTail(std::vector<std::pair<Token, Token_T>> & vars)
 {
     LexicalAnalyzer::GetNextToken();
     prev_empty = true;
@@ -342,17 +349,17 @@ void VarTail(std::vector<Token> & vars)
     std::vector<Token> more_vars; 
     more_vars = IdentifierList();
 
+    checkNextToken(Token_T::COLON, false);
+    Token_T type = TypeMark();
+
     for (Token var : more_vars)
     {
-        vars.push_back(var);
+        vars.push_back(std::pair<Token, Token_T>(var, type));
     }
-
-    checkNextToken(Token_T::COLON, false);
-    TypeMark();
 
     checkNextToken(Token_T::SEMICOLON, false);
 
-    VarTail(more_vars);
+    VarTail(vars);
 
 }
 
@@ -473,6 +480,8 @@ std::pair<bool, TableRecord *> ProcHeading()
 
     // Increment the global depth, and insert the parameters
     global_depth++;
+
+    curr_scope_offset = 0;
     
     for (int i = 0; i < params_to_insert.size(); i++)
     {
@@ -498,10 +507,10 @@ std::pair<bool, TableRecord *> ProcHeading()
         p_rec->m_token = p_token_info;
         p_rec->m_depth = global_depth;
         p_rec->item.variable.m_type = tokenTypeToVarType(p_token_info.m_token);
-        p_rec->item.variable.m_offset = -1;
+        p_rec->item.variable.m_offset = curr_scope_offset;
         p_rec->item.variable.m_size = typeToSize(p_rec->item.variable.m_type, p_token_info);
 
-        p_rec = &rec;
+        curr_scope_offset += p_rec->item.variable.m_size;
     }
 
     // Set all the procedure struct fields using the params_to_insert function

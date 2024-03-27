@@ -113,6 +113,8 @@ void SymbolTable::DeleteDepth(int depth)
             }
         }
     }
+
+    // if (depths_offset_map[])
 }
 
 // WriteTable(depth) - include a procedure that will write out all variables (lexeme only) that are in the table at a specified depth. [ this will be useful for debugging your compiler ]
