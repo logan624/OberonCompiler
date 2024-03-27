@@ -2,10 +2,10 @@
  * Project Name: Gregg1
  * File Name: main.cpp
  * Author: Logan Gregg
- * Date: 2/16/2024
+ * Date: 3/27/2024
  *
  * Description:
- * Lexical Analyzer Assignment for CSC 446
+ * Assignment 5 for CSC 446
  *
  * Build Instructions:
  * This project can be built using Make with the following command:
@@ -13,8 +13,8 @@
  *
  * Run Instructions:
  * After building, the project can be run from the command line as follows:
- * ./Gregg2 <Name of file to read from> 
- * Example: ./Gregg2 test1.txt
+ * ./Gregg5 <Name of file to read from> 
+ * Example: ./Gregg5 test1.txt
  */
 
 #include <iostream>

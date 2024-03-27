@@ -118,6 +118,10 @@ void SymbolTable::DeleteDepth(int depth)
 // WriteTable(depth) - include a procedure that will write out all variables (lexeme only) that are in the table at a specified depth. [ this will be useful for debugging your compiler ]
 void SymbolTable::WriteTable(int depth)
 {
+    std::cout << "-----------------------------------------------" << std::endl;
+    std::cout << "CONTENTS OF SYMBOL TABLE AT DEPTH: " << global_depth << std::endl;
+    std::cout << "-----------------------------------------------" << std::endl;
+
     for (int i = 0; i < TABLE_SIZE; i++) {
         
         TableRecord * node = m_table[i];
@@ -159,3 +163,64 @@ unsigned int SymbolTable::hash(std::string lexeme)
 
     return h % PRIME;
 }
+
+void PrintConstant(TableRecord * tr)
+{
+
+}
+
+void PrintProc(TableRecord * tr)
+{
+
+}
+
+void PrintVar(TableRecord * tr)
+{
+
+}
+
+void VarTypeToString(Var_T vt)
+{
+    switch(vt)
+    {
+        case Var_T::INTEGER:
+            std::cout << "INTEGER";
+            break;
+        case Var_T::REAL:
+            std::cout << "REAL   ";
+            break;
+        case Var_T::CHAR:
+            std::cout << "CHAR   ";
+            break;
+    }
+}
+
+void ParamModeToString(Param_Mode pm)
+{
+    switch(pm)
+    {
+        case Param_Mode::VAL:
+            std::cout << "VALUE    ";
+            break;
+        case Param_Mode::REF:
+            std::cout << "REFERENCE";
+            break;
+    }
+}
+
+void EntryTypeToString(Entry_Type et)
+{
+    switch(et)
+    {
+        case Entry_Type::VAR:
+            std::cout << "VAR      ";
+            break;
+        case Entry_Type::CONST:
+            std::cout << "CONST    ";
+            break;
+        case Entry_Type::FUNCTION:
+            std::cout << "PROCEDURE";
+            break;
+    }
+}
+

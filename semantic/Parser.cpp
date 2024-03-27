@@ -208,7 +208,7 @@ void ConstPart()
         }
         else
         {
-            std::cout << "Error: '" << constants[i].first.m_lexeme << "' already at depth " << global_depth << std::endl;
+            std::cout << "ERROR - MULTIPLE DECLARATION: '" << constants[i].first.m_lexeme << "' already at depth " << global_depth << std::endl;
             exit(109);
         }
 
@@ -310,7 +310,7 @@ int VarTail()
         }
         else
         {
-            std::cout << "Error: '" << vars[i].m_lexeme << "' already at depth " << global_depth << std::endl;
+            std::cout << "ERROR - MULTIPLE DECLARATION: '" << vars[i].m_lexeme << "' already at depth " << global_depth << std::endl;
             exit(109);
         }
 
@@ -458,7 +458,16 @@ std::pair<bool, TableRecord *> ProcHeading()
 
     // Insert the Procedure - FIX IF NEEDED
     TableRecord * p_to_proc;
-    st.Insert(token.m_lexeme, token, global_depth);
+    // st.Insert(token.m_lexeme, token, global_depth);
+    if (st.Lookup(token.m_lexeme) == nullptr)
+        {
+            st.Insert(token.m_lexeme, token, global_depth);
+        }
+        else
+        {
+            std::cout << "ERROR - MULTIPLE DECLARATION: '" << token.m_lexeme << "' already at depth " << global_depth << std::endl;
+            exit(109);
+        }
     p_to_proc = st.Lookup(token.m_lexeme);
 
     std::vector<ParameterInfo> params_to_insert = Args();
@@ -479,7 +488,7 @@ std::pair<bool, TableRecord *> ProcHeading()
         }
         else
         {
-            std::cout << "Error: '" << p_token_info.m_lexeme << "' already at depth " << global_depth << std::endl;
+            std::cout << "ERROR - MULTIPLE DECLARATION: '" << p_token_info.m_lexeme << "' already at depth " << global_depth << std::endl;
             exit(109);
         }
 

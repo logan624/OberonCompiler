@@ -99,6 +99,14 @@ class SymbolTable
         // hash(lexeme) - (private)passed a lexeme and return the location for that lexeme. (this should be an internal routine only, do not list in the interface section). 
         unsigned int hash(std::string lexeme);
 
+        void PrintConstant(TableRecord * tr);
+        void PrintProc(TableRecord * tr);
+        void PrintVar(TableRecord * tr);
+
         // Internal Data Structure for Entries
         std::vector<TableRecord *> m_table;
 };
+
+void VarTypeToString();
+void ParamModeToString();
+void EntryTypeToString();
