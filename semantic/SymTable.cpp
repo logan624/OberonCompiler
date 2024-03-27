@@ -22,7 +22,16 @@ SymbolTable::~SymbolTable()
         while (curr_node != nullptr)
         {
             TableRecord* temp = curr_node;
+            TableRecord* node;
             curr_node = curr_node->m_next;
+
+            if (temp->m_entry == Entry_Type::FUNCTION)
+            {
+                delete temp;
+                node = curr_node;
+                temp = node;
+            }
+
             delete temp;
         }
     }
