@@ -140,8 +140,12 @@ void Prog()
     checkNextToken(Token_T::MODULE, false);
     checkNextToken(Token_T::IDENTIFIER, false);
 
+    // Insert the Procedure - FIX IF NEEDED
+    TableRecord * p_to_proc;
+    st.Insert(token.m_lexeme, token, global_depth);
+    p_to_proc = st.Lookup(token.m_lexeme);
+
     module_name = token;
-    std::cout << module_name.m_lexeme << std::endl;
 
     checkNextToken(Token_T::SEMICOLON, false);
 
@@ -285,16 +289,6 @@ void VarTail()
     checkNextToken(Token_T::SEMICOLON, false);
 
     VarTail(vars);
-
-    // std::cout << "SIZE: " << vars.size() << std::endl;
-    // std::cout << "PRINTING TOKENS TO INSERT:" << std::endl;
-
-    // for (Token var : vars )
-    // {
-    //     std::cout << var.m_lexeme << std::endl;
-    // }
-
-    // std::cout << "DONE" << std::endl;
 
     // Insert the variables as this type into the symbol table
     for (long int i = 0; i < vars.size(); i++)
