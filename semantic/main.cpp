@@ -58,6 +58,8 @@ int main(int argc, char* argv[])
 
     Prog();
 
+    std::cout << "Program parsed successfully!" << std::endl;
+
     delete lex;
     lex = nullptr;
 

@@ -205,6 +205,19 @@ void SymbolTable::PrintProc(TableRecord * tr)
     std::cout << "\tEntry Type: " << EntryTypeToString(tr->m_entry) << std::endl;
     std::cout << "\tSize of Local Variables: " << tr->item.procedure.local_vars_size << std::endl;
     std::cout << "\tNumber of Parameters: " << tr->item.procedure.num_params << std::endl;
+    std::cout << "\tParams: " << std::endl;
+    
+    // for (ParameterInfo pi : tr->item.procedure.param_info)
+    // {
+    //     std::cout << "Test!" << std::endl;
+    // }
+
+    // ParameterInfo* node = tr->item.procedure.param_info;
+    // while(node != nullptr) // Changed to check node itself, not node->next_node
+    // {
+    //     std::cout << "Node: " << node->m_token.m_lexeme << std::endl; // Added std::endl for clarity in output
+    //     node = node->next_node;
+    // }
 
 }
 

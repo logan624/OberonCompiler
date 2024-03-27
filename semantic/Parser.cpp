@@ -478,6 +478,40 @@ std::pair<bool, TableRecord *> ProcHeading()
 
     std::vector<ParameterInfo> params_to_insert = Args();
 
+    // Connect/create a linked list of the parameter info nodes so that the head one can be inserted into the procedure
+    ParameterInfo * head = nullptr;
+    ParameterInfo * prev;
+
+    for(int i = 0; i < params_to_insert.size(); i++)
+    {
+        ParameterInfo * node = new ParameterInfo();
+
+        node->m_mode = params_to_insert[i].m_mode;
+        node->m_type = params_to_insert[i].m_type;
+        node->m_token = params_to_insert[i].m_token;
+        node->next_node = nullptr;
+
+        prev = node;
+        
+        if (i == 0)
+        {
+            head = node;
+        }
+        else
+        {
+            prev->next_node = node;
+        }
+
+        prev = node;
+    }
+
+    // ParameterInfo* node = head;
+    // while(node != nullptr) // Changed to check node itself, not node->next_node
+    // {
+    //     std::cout << "Node: " << node->m_token.m_lexeme << std::endl; // Added std::endl for clarity in output
+    //     node = node->next_node;
+    // }
+
     // Increment the global depth, and insert the parameters
     global_depth++;
 
@@ -526,7 +560,7 @@ std::pair<bool, TableRecord *> ProcHeading()
     // Set the number of parameters
     p_to_proc->item.procedure.num_params = params_to_insert.size();
 
-    p_to_proc->item.procedure.param_info = &params_to_insert;
+    p_to_proc->item.procedure.param_info = head;
 
     ret.second = p_to_proc;
     return ret;

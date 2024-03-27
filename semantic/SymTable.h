@@ -19,7 +19,8 @@ struct ParameterInfo
 {
     Param_Mode m_mode;
     Var_T m_type;
-    Token m_token; 
+    Token m_token;
+    ParameterInfo * next_node;
 };
 
 struct TableRecord {
@@ -55,7 +56,7 @@ struct TableRecord {
             int local_vars_size;
             int num_params;
             
-            std::vector<ParameterInfo> * param_info;
+            ParameterInfo * param_info;
             
             // std::vector<std::string> * m_param_lexemes;
             // std::vector<Var_T> * m_param_types;
