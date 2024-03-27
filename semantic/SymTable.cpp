@@ -135,12 +135,27 @@ void SymbolTable::WriteTable(int depth)
         {
             if (node->m_depth == depth)
             {
-                std::cout << "Lexeme: " << node->m_lexeme << " , Depth: " << node->m_depth << std::endl;
+                // std::cout << "Lexeme: " << node->m_lexeme << " , Depth: " << node->m_depth << std::endl;
+                
+                if (node->m_entry == Entry_Type::CONST)
+                {
+                    PrintConstant(node);
+                }
+                else if (node->m_entry == Entry_Type::VAR)
+                {
+                    PrintVar(node);
+                }
+                else if (node->m_entry == Entry_Type::FUNCTION)
+                {
+                    PrintProc(node);
+                }
             }
 
             node = node->m_next;
          }
     }
+
+    std::cout << std::endl;
 }
 
 // hash(lexeme) - (private)passed a lexeme and return the location for that lexeme. (this should be an internal routine only, do not list in the interface section). 
@@ -164,63 +179,90 @@ unsigned int SymbolTable::hash(std::string lexeme)
     return h % PRIME;
 }
 
-void PrintConstant(TableRecord * tr)
+void SymbolTable::PrintConstant(TableRecord * tr)
 {
+    // Print Lexeme, Entry Type, Number Type, Value of constant
+    std::cout << tr->m_lexeme << std::endl;
+    std::cout << "\tEntry Type: " << EntryTypeToString(tr->m_entry) << std::endl;
+    if (tr->item.constant.m_is_int)
+    {
+        std::cout << "\tType:       INTEGER" << std::endl;
+        std::cout << "\tValue:      " << tr->item.constant.m_value.m_int_val << std::endl;
+    }
+    else
+    {
+        std::cout << "\tType:       FLOAT" << std::endl;
+        std::cout << "\tValue:      " << tr->item.constant.m_value.m_real_val << std::endl;
+    }
+} 
+
+void SymbolTable::PrintProc(TableRecord * tr)
+{
+    // Print Lexeme, Entry Type, Size of Local Variables, Number of Parameters
+    std::cout << tr->m_lexeme << std::endl;
+    std::cout << "\tEntry Type: " << EntryTypeToString(tr->m_entry) << std::endl;
+    std::cout << "\tSize of Local Variables: " << tr->item.procedure.local_vars_size << std::endl;
+    std::cout << "\tNumber of Parameters: " << tr->item.procedure.num_params << std::endl;
 
 }
 
-void PrintProc(TableRecord * tr)
+void SymbolTable::PrintVar(TableRecord * tr)
 {
-
+    // Print Lexeme, Entry Type, Type of Var, Offset
+    std::cout << tr->m_lexeme << std::endl;
+    std::cout << "\tEntry Type: " << EntryTypeToString(tr->m_entry) << std::endl;
+    std::cout << "\tType:       " << VarTypeToString(tr->item.variable.m_type) << std::endl;
+    std::cout << "\tOffset:     " << tr->item.variable.m_offset << std::endl;
 }
 
-void PrintVar(TableRecord * tr)
-{
-
-}
-
-void VarTypeToString(Var_T vt)
+std::string VarTypeToString(Var_T vt)
 {
     switch(vt)
     {
         case Var_T::INTEGER:
-            std::cout << "INTEGER";
+            return "INTEGER";
             break;
         case Var_T::REAL:
-            std::cout << "REAL   ";
+            return "REAL";
             break;
         case Var_T::CHAR:
-            std::cout << "CHAR   ";
+            return "CHAR";
             break;
+        default:
+            return "";
     }
 }
 
-void ParamModeToString(Param_Mode pm)
+std::string ParamModeToString(Param_Mode pm)
 {
     switch(pm)
     {
         case Param_Mode::VAL:
-            std::cout << "VALUE    ";
+            return "VALUE";
             break;
         case Param_Mode::REF:
-            std::cout << "REFERENCE";
+            return "REFERENCE";
             break;
+        default:
+            return "";
     }
 }
 
-void EntryTypeToString(Entry_Type et)
+std::string EntryTypeToString(Entry_Type et)
 {
     switch(et)
     {
         case Entry_Type::VAR:
-            std::cout << "VAR      ";
+            return "VAR      ";
             break;
         case Entry_Type::CONST:
-            std::cout << "CONST    ";
+            return "CONST    ";
             break;
         case Entry_Type::FUNCTION:
-            std::cout << "PROCEDURE";
+            return "PROCEDURE";
             break;
+        default:
+            return "";
     }
 }
 

@@ -144,6 +144,7 @@ void Prog()
     TableRecord * p_to_proc;
     st.Insert(token.m_lexeme, token, global_depth);
     p_to_proc = st.Lookup(token.m_lexeme);
+    p_to_proc->m_entry = Entry_Type::FUNCTION;
 
     module_name = token;
 
@@ -156,8 +157,6 @@ void Prog()
     checkNextToken(Token_T::END, false);
     checkNextToken(Token_T::IDENTIFIER, false);
     checkNextToken(Token_T::PERIOD, false);
-
-    std::cout << "SIZE OF ONE: " << p_to_proc->item.procedure.local_vars_size << std::endl;
 
     while (global_depth >= 1)
     {

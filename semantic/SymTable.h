@@ -107,6 +107,6 @@ class SymbolTable
         std::vector<TableRecord *> m_table;
 };
 
-void VarTypeToString();
-void ParamModeToString();
-void EntryTypeToString();
+std::string VarTypeToString(Var_T vt);
+std::string ParamModeToString(Param_Mode pm);
+std::string EntryTypeToString(Entry_Type et);
