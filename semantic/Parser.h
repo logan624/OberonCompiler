@@ -14,7 +14,7 @@ void checkNextToken(Token_T expected, bool empty_ok);
 void Prog();
 
 // DeclarativePart -> ConstPart VarPart ProcPart
-void DeclarativePart();
+void DeclarativePart(TableRecord * p_to_proc);
 
 // ConstPart -> constt ConstTail | e
 void ConstPart();
@@ -23,10 +23,10 @@ void ConstPart();
 void ConstTail(std::vector<std::pair<Token, Token>> & constants);
 
 // VarPart -> vart VarTail | e
-void VarPart();
+int VarPart();
 
 // VarTail -> IdentifierList : TypeMark ; VarTail | e
-void VarTail();
+int VarTail();
 
 void VarTail(std::vector<Token> & vars);
 
@@ -46,10 +46,10 @@ void ProcPart();
 bool ProcedureDecl();
 
 // ProcHeading -> proct idt Args
-bool ProcHeading();
+std::pair<bool, TableRecord *> ProcHeading();
 
 // ProcBody -> DeclarativePart StatementPart endt
-void ProcBody();
+void ProcBody(TableRecord * p_to_proc);
 
 // Args -> ( ArgList ) | e
 std::vector<ParameterInfo> Args();

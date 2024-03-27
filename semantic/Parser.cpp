@@ -151,11 +151,13 @@ void Prog()
 
     global_depth++;
 
-    DeclarativePart();
+    DeclarativePart(p_to_proc);
     StatementPart();
     checkNextToken(Token_T::END, false);
     checkNextToken(Token_T::IDENTIFIER, false);
     checkNextToken(Token_T::PERIOD, false);
+
+    std::cout << "SIZE OF ONE: " << p_to_proc->item.procedure.local_vars_size << std::endl;
 
     while (global_depth >= 1)
     {
@@ -171,10 +173,13 @@ void Prog()
 }
 
 // DeclarativePart -> ConstPart VarPart ProcPart
-void DeclarativePart()
+void DeclarativePart(TableRecord * p_to_proc)
 {
     ConstPart();
-    VarPart();
+    int local_vars_size = VarPart();
+
+    p_to_proc->item.procedure.local_vars_size = local_vars_size;
+
     ProcPart();
 }
 
@@ -255,29 +260,30 @@ void ConstTail(std::vector<std::pair<Token, Token>> & constants)
 }
 
 // VarPart -> vart VarTail | e
-void VarPart()
+int VarPart()
 {
     checkNextToken(Token_T::VAR, true);
     
     if (prev_empty)
     {
-        return;
+        return 0;
     }
 
-    VarTail();
+    int size_of_vars = VarTail();
 
+    return size_of_vars;
 }
 
 // THIS NEEDS CHECKED -- NOT SURE IF THE CASE WHERE IdentifierList is EMPTY IS BEING HANDLED CORRECLTY
 // VarTail -> IdentifierList : TypeMark ; VarTail | e
-void VarTail()
+int VarTail()
 {
     LexicalAnalyzer::GetNextToken();
     prev_empty = true;
 
     if (token.m_token != Token_T::IDENTIFIER)
     {
-        return;
+        return 0;
     }
 
     std::vector<Token> vars; 
@@ -289,6 +295,8 @@ void VarTail()
     checkNextToken(Token_T::SEMICOLON, false);
 
     VarTail(vars);
+
+    int size_of_vars = 0;
 
     // Insert the variables as this type into the symbol table
     for (long int i = 0; i < vars.size(); i++)
@@ -316,8 +324,10 @@ void VarTail()
         p_rec->item.variable.m_offset = -1;
         p_rec->item.variable.m_size = typeToSize(p_rec->item.variable.m_type, vars[i]);
 
-        p_rec = &rec;
+        size_of_vars += p_rec->item.variable.m_size;
     }
+
+    return size_of_vars;
 }
 
 void VarTail(std::vector<Token> & vars)
@@ -406,29 +416,43 @@ void ProcPart()
 // ProcedureDecl -> ProcHeading ; ProcBody idt ;
 bool ProcedureDecl()
 {
-    bool ret_status = false;
-    ret_status = ProcHeading();
-    if (ret_status == true)
+    std::pair<bool, TableRecord *> ret;
+    ret.first = false;
+
+    ret = ProcHeading();
+
+    if (ret.first == true)
     {
         return true;
     }
     checkNextToken(Token_T::SEMICOLON, false);
-    ProcBody();
+    ProcBody(ret.second);
     checkNextToken(Token_T::IDENTIFIER, false);
-
     checkNextToken(Token_T::SEMICOLON, false);
+        
+    // Do at the end of each procedure
+    st.WriteTable(global_depth);
+    st.DeleteDepth(global_depth);
+    std::cout << "Deleted Depth " << global_depth << std::endl;
+    global_depth--;
+
     return false;
 }
 
 // ProcHeading -> proct idt Args
-bool ProcHeading()
+std::pair<bool, TableRecord *> ProcHeading()
 {
+    std::pair<bool, TableRecord *> ret;
+    ret.first = false;
+    ret.second = nullptr;
+
     checkNextToken(Token_T::PROCEDURE, true);
     Token t = token;
     if (prev_empty == true)
     {
         prev_empty = false;
-        return true;
+        ret.first = true;
+        return ret;
     }
     checkNextToken(Token_T::IDENTIFIER, false);
 
@@ -476,37 +500,29 @@ bool ProcHeading()
     p_to_proc->m_entry = Entry_Type::FUNCTION;
     
     // TODO - Set the size appropriately by calculating the sum of all vars sizes
-    int params_size = 0;
-    for(ParameterInfo info : params_to_insert)
-    {
-        params_size += typeToSize(info.m_type, info.m_token);
-    }
-    p_to_proc->item.procedure.local_vars_size = params_size;
+    // int params_size = 0;
+    // for(ParameterInfo info : params_to_insert)
+    // {
+    //     params_size += typeToSize(info.m_type, info.m_token);
+    // }
 
     // Set the number of parameters
     p_to_proc->item.procedure.num_params = params_to_insert.size();
 
     p_to_proc->item.procedure.param_info = &params_to_insert;
 
-    return false;
+    ret.second = p_to_proc;
+    return ret;
 }
 
 // ProcBody -> DeclarativePart StatementPart endt
-void ProcBody()
+void ProcBody(TableRecord * p_to_proc)
 {
-    DeclarativePart();
+    DeclarativePart(p_to_proc);
     prev_empty = true;
     StatementPart();
 
     checkNextToken(Token_T::END, false);
-
-    // Do at the end of each procedure
-    st.WriteTable(global_depth);
-    st.DeleteDepth(global_depth);
-
-    std::cout << "Deleted Depth " << global_depth << std::endl;
-
-    global_depth--;
 }
 
 // Args -> ( ArgList ) | e
