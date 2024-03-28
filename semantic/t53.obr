@@ -1,0 +1,9 @@
+MODULE test3;
+  VAR x,y:INTEGER;
+      z:REAL;
+  PROCEDURE a(x:INTEGER; y:INTEGER);
+  VAR a,b:INTEGER;
+  
+  END a;
+
+END test3.

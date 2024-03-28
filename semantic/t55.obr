@@ -1,0 +1,12 @@
+MODULE test5;
+CONST w= 5;
+VAR   z:INTEGER;
+      a,b,c,d:REAL;
+  PROCEDURE two (VAR x:INTEGER;  y :INTEGER);
+  CONST a= 2.3;
+  VAR b:REAL;
+      c,d,e,f:INTEGER;
+  
+  END two;
+
+END test5.

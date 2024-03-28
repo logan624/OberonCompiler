@@ -1,0 +1,6 @@
+MODULE test1;
+VAR a,b,c:REAL;
+    x,y,z:INTEGER;
+
+END test1.
+

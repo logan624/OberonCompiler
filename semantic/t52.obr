@@ -1,0 +1,8 @@
+MODULE test2;
+  PROCEDURE one;
+  VAR x:INTEGER;
+      y:REAL;
+  
+  END one;
+
+END test2.

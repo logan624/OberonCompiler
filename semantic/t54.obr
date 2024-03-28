@@ -1,0 +1,10 @@
+(* line one of comment *)
+(* line two of comment *)
+MODULE test4;
+ VAR x,y,z:INTEGER;
+ PROCEDURE summit (VAR sum:INTEGER; x,y:INTEGER);
+  VAR sum : INTEGER; (* variable sum *)
+  
+  END summit;
+
+END test4.
