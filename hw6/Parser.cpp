@@ -681,20 +681,164 @@ void StatementPart()
 // SeqOfStatements -> e
 void SeqOfStatements()
 {
-    // while(token.m_token != Token_T::END)
-    // {
-    //     LexicalAnalyzer::GetNextToken();
+    Statement();
 
-    //     if (token.m_token == Token_T::EOF_T)
-    //     {
-    //         break;
-    //     }
-    // }
+    checkNextToken(Token_T::SEMICOLON, true);
 
-    // prev_empty = true;
+    if (prev_empty)
+    {
+        return;
+    }
+
+    StatTail();
+}
+
+// StatTail -> Statement ; StatSail | e
+void StatTail()
+{
+    Statement();
+
+    checkNextToken(Token_T::SEMICOLON, true);
+
+    if (prev_empty)
+    {
+        return;
+    }
+
+    StatTail();
+}
+
+// Statement -> AssignStat | IOStat
+void Statement()
+{
+    if (!prev_empty)
+    {
+        LexicalAnalyzer::GetNextToken();
+        prev_empty = true;
+    }
+    
+    if (token.m_token == Token_T::IDENTIFIER)
+    {
+        AssignStat();
+    }
+    else
+    {
+        IOStat();
+    }
+
+}
+
+// AssignStat -> idt := Expr
+void AssignStat()
+{
+    checkNextToken(Token_T::IDENTIFIER, false);
+    checkNextToken(Token_T::ASSOP, false);
+    Expr();
+}
+
+// IOStat -> e
+void IOStat()
+{
+    return;
+}
+
+// Expr -> Relation
+void Expr()
+{
+    Relation();
+}
+
+// Relation -> SimpleExpr
+void Relation()
+{
+    SimpleExpr();
+}
+
+// SimpleExpr -> Term MoreTerm
+void SimpleExpr()
+{
+    Term();
+    MoreTerm();
+}
+
+// MoreTerm -> Addop Term MoreTerm | e
+void MoreTerm()
+{
+    AddOp();
+
+    if (prev_empty)
+    {
+        return;
+    }
+
+    Term();
+    MoreTerm();
+}
+
+// Term -> Factor MoreFactor
+void Term()
+{
+    Factor();
+    MoreFactor();
+}
+
+// MoreFactor -> MulOp Factor MoreFactor | e
+void MoreFactor()
+{
+    MulOp();
+    
+    if (prev_empty == true)
+    {
+        return;
+    }
+
+    Factor();
+    MoreFactor();
+}
+
+// Factor -> idt | numt | ( Expr ) | ~ Factor | SignOp Factor
+void Factor()
+{
+    std::vector<Token_T> types_to_check = { Token_T::IDENTIFIER, Token_T::NUMBER, Token_T::L_SYMBOL,
+            Token_T::TILDAE};
+
+    checkNextToken(types_to_check, true);
+
+    if (prev_empty)
+    {
+        SignOp();
+        Factor();
+    }
+
+    if (token.m_token == Token_T::L_SYMBOL)
+    {
+            Expr();
+            checkNextToken(Token_T::R_SYMBOL, false);
+    }
+    else if (token.m_token == Token_T::TILDAE)
+    {
+            Factor();
+    }
     
     return;
+}
 
+// AddOp -> + | - | OR
+void AddOp()
+{
+    std::vector<Token_T> types_to_check = { Token_T::ADDOP, Token_T::MINUS };
+}
+
+// MulOp -> * | / | DIV | MOD | &
+void MulOp()
+{
+    checkNextToken(Token_T::MULOP, false);
+}
+
+// SignOp -> -
+void SignOp()
+{
+    checkNextToken(Token_T::MINUS, false);
 }
 
 

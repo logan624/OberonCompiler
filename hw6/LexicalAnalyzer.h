@@ -25,6 +25,9 @@ enum class Token_T {
     // Addition Subtraction Operators
     ADDOP,
 
+    // Sign Operators
+    MINUS,
+
     // Multiplication Operators
     MULOP,
 

@@ -43,7 +43,7 @@ std::map<std::string, Token_T> reserved_words_dict = {
 
         // Addition Subtraction Operators
         {"+", Token_T::ADDOP},
-        {"-", Token_T::ADDOP},
+        {"-", Token_T::MINUS},
         {"OR", Token_T::ADDOP},
 
         // Multiplication Operators
