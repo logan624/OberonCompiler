@@ -6,6 +6,7 @@ bool prev_empty;
 SymbolTable st;
 int global_depth;
 int curr_scope_offset;
+std::string curr_procedure;
 
 int typeToSize(Var_T type, Token t)
 {
@@ -154,13 +155,18 @@ void Prog()
 
     global_depth++;
 
-    t = token;
     DeclarativePart(p_to_proc);
-    t = token;
     StatementPart();
-    t = token;
     checkNextToken(Token_T::END, false);
     checkNextToken(Token_T::IDENTIFIER, false);
+
+    if (token.m_lexeme != module_name.m_lexeme)
+    {
+        std::cout << "ERROR - PARSING - " << line_no << " : Ending identifier '" << token.m_lexeme << 
+            "' does not match module name '" << module_name.m_lexeme << "'" << std::endl;
+        exit(101);
+    }
+
     checkNextToken(Token_T::PERIOD, false);
 
     while (global_depth >= 1)
@@ -441,10 +447,16 @@ bool ProcedureDecl()
     checkNextToken(Token_T::SEMICOLON, false);
     ProcBody(ret.second);
     checkNextToken(Token_T::IDENTIFIER, false);
+
+    if (token.m_lexeme != curr_procedure)
+    {
+        std::cout << "ERROR - PARSING - LINE " << line_no << ": Closing procedure identifier '" << token.m_lexeme 
+            << "' does not match procedure name '" << curr_procedure << "'" << std::endl;
+        exit(101); 
+    }
+
     checkNextToken(Token_T::SEMICOLON, false);
         
-    t = token;
-
     // Do at the end of each procedure
     st.WriteTable(global_depth);
     st.DeleteDepth(global_depth);
@@ -470,6 +482,7 @@ std::pair<bool, TableRecord *> ProcHeading()
         return ret;
     }
     checkNextToken(Token_T::IDENTIFIER, false);
+    curr_procedure = token.m_lexeme;
 
     // Insert the Procedure - FIX IF NEEDED
     TableRecord * p_to_proc;
@@ -549,13 +562,6 @@ std::pair<bool, TableRecord *> ProcHeading()
 
     // Set all the procedure struct fields using the params_to_insert function
     p_to_proc->m_entry = Entry_Type::FUNCTION;
-    
-    // TODO - Set the size appropriately by calculating the sum of all vars sizes
-    // int params_size = 0;
-    // for(ParameterInfo info : params_to_insert)
-    // {
-    //     params_size += typeToSize(info.m_type, info.m_token);
-    // }
 
     // Set the number of parameters
     p_to_proc->item.procedure.num_params = params_to_insert.size();
