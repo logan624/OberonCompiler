@@ -149,12 +149,16 @@ void Prog()
 
     module_name = token;
 
+    Token t = token;
     checkNextToken(Token_T::SEMICOLON, false);
 
     global_depth++;
 
+    t = token;
     DeclarativePart(p_to_proc);
+    t = token;
     StatementPart();
+    t = token;
     checkNextToken(Token_T::END, false);
     checkNextToken(Token_T::IDENTIFIER, false);
     checkNextToken(Token_T::PERIOD, false);
@@ -427,8 +431,11 @@ bool ProcedureDecl()
 
     ret = ProcHeading();
 
+    Token t = token;
+
     if (ret.first == true)
     {
+        prev_empty = true;
         return true;
     }
     checkNextToken(Token_T::SEMICOLON, false);
@@ -436,6 +443,8 @@ bool ProcedureDecl()
     checkNextToken(Token_T::IDENTIFIER, false);
     checkNextToken(Token_T::SEMICOLON, false);
         
+    t = token;
+
     // Do at the end of each procedure
     st.WriteTable(global_depth);
     st.DeleteDepth(global_depth);

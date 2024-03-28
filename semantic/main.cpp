@@ -41,7 +41,6 @@ int main(int argc, char* argv[])
 
     // Create instance of the lexical analyzer
     LexicalAnalyzer* lex = new LexicalAnalyzer(prog_file);
-    // LexicalAnalyzer* lex = new LexicalAnalyzer("oberon_ex1.txt");
     
     while (token.m_token != Token_T::EOF_T)
     {
@@ -52,7 +51,6 @@ int main(int argc, char* argv[])
     // Delete and ReAllocate the Lexical Analyzer to reset file pos
     delete lex;
     lex = new LexicalAnalyzer(prog_file);
-    // lex = new LexicalAnalyzer("oberon_ex1.txt");
 
     st = SymbolTable();
 
