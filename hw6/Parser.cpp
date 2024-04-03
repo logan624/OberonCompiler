@@ -145,7 +145,7 @@ void Prog()
     // Insert the Procedure - FIX IF NEEDED
     TableRecord * p_to_proc;
     st.Insert(token.m_lexeme, token, global_depth);
-    p_to_proc = st.Lookup(token.m_lexeme);
+    p_to_proc = st.LookupAtCurrentDepth(token.m_lexeme);
     p_to_proc->m_entry = Entry_Type::FUNCTION;
 
     module_name = token;
@@ -212,7 +212,7 @@ void ConstPart()
         TableRecord * p_rec;
         TableRecord rec;
 
-        if (st.Lookup(constants[i].first.m_lexeme) == nullptr)
+        if (st.LookupAtCurrentDepth(constants[i].first.m_lexeme) == nullptr)
         {
             st.Insert(constants[i].first.m_lexeme, constants[i].first, global_depth);
         }
@@ -222,7 +222,7 @@ void ConstPart()
             exit(109);
         }
 
-        p_rec = st.Lookup(constants[i].first.m_lexeme);
+        p_rec = st.LookupAtCurrentDepth(constants[i].first.m_lexeme);
 
         p_rec->m_entry = Entry_Type::CONST;
         p_rec->m_lexeme = constants[i].first.m_lexeme;
@@ -319,7 +319,7 @@ int VarTail()
         TableRecord * p_rec;
         TableRecord rec;
 
-        if (st.Lookup(vars_to_insert[i].first.m_lexeme) == nullptr)
+        if (st.LookupAtCurrentDepth(vars_to_insert[i].first.m_lexeme) == nullptr)
         {
             st.Insert(vars_to_insert[i].first.m_lexeme, vars_to_insert[i].first, global_depth);
         }
@@ -329,7 +329,7 @@ int VarTail()
             exit(109);
         }
 
-        p_rec = st.Lookup(vars_to_insert[i].first.m_lexeme);
+        p_rec = st.LookupAtCurrentDepth(vars_to_insert[i].first.m_lexeme);
 
         p_rec->m_entry = Entry_Type::VAR;
         p_rec->m_lexeme = vars_to_insert[i].first.m_lexeme;
@@ -487,7 +487,7 @@ std::pair<bool, TableRecord *> ProcHeading()
     // Insert the Procedure - FIX IF NEEDED
     TableRecord * p_to_proc;
     // st.Insert(token.m_lexeme, token, global_depth);
-    if (st.Lookup(token.m_lexeme) == nullptr)
+    if (st.LookupAtCurrentDepth(token.m_lexeme) == nullptr)
         {
             st.Insert(token.m_lexeme, token, global_depth);
         }
@@ -496,7 +496,7 @@ std::pair<bool, TableRecord *> ProcHeading()
             std::cout << "ERROR - MULTIPLE DECLARATION: '" << token.m_lexeme << "' already at depth " << global_depth << std::endl;
             exit(109);
         }
-    p_to_proc = st.Lookup(token.m_lexeme);
+    p_to_proc = st.LookupAtCurrentDepth(token.m_lexeme);
 
     std::vector<ParameterInfo> params_to_insert = Args();
 
@@ -537,7 +537,7 @@ std::pair<bool, TableRecord *> ProcHeading()
         TableRecord * p_rec;
         TableRecord rec;
 
-        if (st.Lookup(p_token_info.m_lexeme) == nullptr)
+        if (st.LookupAtCurrentDepth(p_token_info.m_lexeme) == nullptr)
         {
             st.Insert(p_token_info.m_lexeme, p_token_info, global_depth);
         }
@@ -547,7 +547,7 @@ std::pair<bool, TableRecord *> ProcHeading()
             exit(109);
         }
 
-        p_rec = st.Lookup(p_token_info.m_lexeme);
+        p_rec = st.LookupAtCurrentDepth(p_token_info.m_lexeme);
 
         p_rec->m_entry = Entry_Type::VAR; // this part will be conditional!
         p_rec->m_lexeme = p_token_info.m_lexeme;
@@ -733,6 +733,12 @@ void AssignStat()
 {
     Token t = token;
     checkNextToken(Token_T::IDENTIFIER, false);
+    if (st.Lookup(token.m_lexeme) == nullptr)
+    {
+        std::cout << "ERROR - SEMANTIC ANALYSIS - LINE " << line_no << ": Identifier '"
+            << token.m_lexeme << "' not previously declared" << std::endl;
+        exit(101);
+    }
     checkNextToken(Token_T::ASSOP, false);
     Expr();
 }
@@ -815,12 +821,18 @@ void Factor()
 
     if (token.m_token == Token_T::IDENTIFIER)
     {
-        // 
-        std::cout << "";
+        // Ensure used identifiers have been declared previously
+        if (st.Lookup(token.m_lexeme) == nullptr)
+        {
+            std::cout << "ERROR - SEMANTIC ANALYSIS - LINE " << line_no << ": Identifier '"
+                << token.m_lexeme << "' not previously declared" << std::endl;
+            exit(101);
+        }
+        
     }
     else if (token.m_token == Token_T::NUMBER)
     {
-        std::cout << "";
+        // Maybe add stuff here in later assingments?
     }
     else if (token.m_token == Token_T::L_SYMBOL)
     {

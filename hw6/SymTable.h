@@ -92,6 +92,7 @@ class SymbolTable
         void Insert(std::string p_lexeme, Token p_token, int p_depth);
         // Lookup(lex) - lookup uses the lexeme to find the entry and returns a pointer to that entry.
         TableRecord * Lookup(std::string lex);
+        TableRecord * LookupAtCurrentDepth(std::string lex);
         // DeleteDepth(depth) - delete is passed the depth and deletes all records that are in the table at that depth.
         void DeleteDepth(int depth);
         // WriteTable(depth) - include a procedure that will write out all variables (lexeme only) that are in the table at a specified depth. [ this will be useful for debugging your compiler ]

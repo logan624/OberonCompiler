@@ -65,7 +65,7 @@ void SymbolTable::Insert(std::string p_lexeme, Token p_token, int p_depth)
 }
 
 // Lookup(lex) - lookup uses the lexeme to find the entry and returns a pointer to that entry.
-TableRecord * SymbolTable::Lookup(std::string lex)
+TableRecord * SymbolTable::LookupAtCurrentDepth(std::string lex)
 {
     int hash = this->hash(lex);
 
@@ -74,6 +74,25 @@ TableRecord * SymbolTable::Lookup(std::string lex)
     while (ret != nullptr)
     {
         if (ret->m_lexeme == lex && ret->m_depth == global_depth)
+        {
+            return ret;
+        }
+
+        ret = ret->m_next;
+    }
+
+    return nullptr;
+}
+
+TableRecord * SymbolTable::Lookup(std::string lex)
+{
+    int hash = this->hash(lex);
+
+    TableRecord* ret = m_table[hash];
+    
+    while (ret != nullptr)
+    {
+        if (ret->m_lexeme == lex)
         {
             return ret;
         }
