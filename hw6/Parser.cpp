@@ -719,6 +719,7 @@ void Statement()
     
     if (token.m_token == Token_T::IDENTIFIER)
     {
+        Token t = token;
         AssignStat();
     }
     else
@@ -764,6 +765,7 @@ void Relation()
 // SimpleExpr -> Term MoreTerm
 void SimpleExpr()
 {
+    Token t = token;
     Term();
     MoreTerm();
 }
@@ -813,9 +815,12 @@ void Factor()
 
     checkNextToken(types_to_check, true);
 
+    Token t = token;
+
     if (prev_empty)
     {
         SignOp();
+        prev_empty = false;
         Factor();
     }
 

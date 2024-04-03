@@ -11,6 +11,14 @@ BEGIN
   localX := localX DIV 2;
   localX := localY MOD 3;
   a := 12.5;
+  a := -3;
+  localX := localY & localX;
+  localX := localY / localX;
+  localX := localY & localX;
+  localX := localY - localX;
+  localX := localY OR localX;
+  a := ~localX;
+  a := -localX;
 END Proc1;
 
 BEGIN
