@@ -1,5 +1,5 @@
-Gregg5: main.o LexicalAnalyzer.o Parser.o SymTable.o
-	g++ -std=c++11 -o Gregg5 main.o LexicalAnalyzer.o Parser.o SymTable.o
+Gregg6: main.o LexicalAnalyzer.o Parser.o SymTable.o
+	g++ -std=c++11 -o Gregg6 main.o LexicalAnalyzer.o Parser.o SymTable.o
 
 main.o: main.cpp
 	g++ -std=c++11 -c main.cpp
@@ -14,4 +14,4 @@ SymTable.o: SymTable.cpp SymTable.h
 	g++ -std=c++11 -c SymTable.cpp
 
 clean:
-	rm Gregg5 main.o LexicalAnalyzer.o Parser.o SymTable.o
+	rm Gregg6 main.o LexicalAnalyzer.o Parser.o SymTable.o

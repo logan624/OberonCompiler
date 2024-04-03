@@ -731,6 +731,7 @@ void Statement()
 // AssignStat -> idt := Expr
 void AssignStat()
 {
+    Token t = token;
     checkNextToken(Token_T::IDENTIFIER, false);
     checkNextToken(Token_T::ASSOP, false);
     Expr();
@@ -765,6 +766,8 @@ void SimpleExpr()
 void MoreTerm()
 {
     AddOp();
+
+    Token t = token;
 
     if (prev_empty)
     {
@@ -810,7 +813,16 @@ void Factor()
         Factor();
     }
 
-    if (token.m_token == Token_T::L_SYMBOL)
+    if (token.m_token == Token_T::IDENTIFIER)
+    {
+        // 
+        std::cout << "";
+    }
+    else if (token.m_token == Token_T::NUMBER)
+    {
+        std::cout << "";
+    }
+    else if (token.m_token == Token_T::L_SYMBOL)
     {
             Expr();
             checkNextToken(Token_T::R_SYMBOL, false);
@@ -827,18 +839,20 @@ void Factor()
 void AddOp()
 {
     std::vector<Token_T> types_to_check = { Token_T::ADDOP, Token_T::MINUS };
+
+    checkNextToken(types_to_check, true);
 }
 
 // MulOp -> * | / | DIV | MOD | &
 void MulOp()
 {
-    checkNextToken(Token_T::MULOP, false);
+    checkNextToken(Token_T::MULOP, true);
 }
 
 // SignOp -> -
 void SignOp()
 {
-    checkNextToken(Token_T::MINUS, false);
+    checkNextToken(Token_T::MINUS, true);
 }
 
 
