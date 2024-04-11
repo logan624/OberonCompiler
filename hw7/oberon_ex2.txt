@@ -1,0 +1,31 @@
+MODULE Main;
+VAR x, y, z: INTEGER;
+    a, b: REAL;
+
+PROCEDURE Proc1;
+VAR localX, localY: INTEGER;
+BEGIN
+  localX := 10;
+  localY := localX + 5;
+  localX := localY * (localX - 2) * localX - -localY;
+  localX := localX DIV 2;
+  localX := localY MOD 3;
+  a := 12.5;
+  a := -3;
+  localX := localY & localX;
+  localX := localY / localX;
+  localX := localY & localX;
+  localX := localY - localX;
+  localX := localY OR localX;
+  a := ~localX;
+  a := -localX;
+END Proc1;
+
+BEGIN
+  x := 0;
+  y := a;
+  z := x + y;
+  z := z - x;
+  z := z * 2;
+  a := b + 3.5;
+END Main.
