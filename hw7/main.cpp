@@ -29,19 +29,19 @@ int main(int argc, char* argv[])
 {
     std::string prog_file;
 
-    if (argc != 2)
-    {
-        std::cout << "Usage: " << argv[0] << " filename" << std::endl;
-        return 100;
-    }
-    else
-    {
-        prog_file = argv[1];
-    }
+    // if (argc != 2)
+    // {
+    //     std::cout << "Usage: " << argv[0] << " filename" << std::endl;
+    //     return 100;
+    // }
+    // else
+    // {
+    //     prog_file = argv[1];
+    // }
 
     // Create instance of the lexical analyzer
-    LexicalAnalyzer* lex = new LexicalAnalyzer(prog_file);
-    // LexicalAnalyzer* lex = new LexicalAnalyzer("oberon_ex2.txt");
+    // LexicalAnalyzer* lex = new LexicalAnalyzer(prog_file);
+    LexicalAnalyzer* lex = new LexicalAnalyzer("oberon_ex2.txt");
     
     while (token.m_token != Token_T::EOF_T)
     {
@@ -51,8 +51,8 @@ int main(int argc, char* argv[])
 
     // Delete and ReAllocate the Lexical Analyzer to reset file pos
     delete lex;
-    lex = new LexicalAnalyzer(prog_file);
-    // lex = new LexicalAnalyzer("oberon_ex2.txt");
+    // lex = new LexicalAnalyzer(prog_file);
+    lex = new LexicalAnalyzer("oberon_ex2.txt");
 
     st = SymbolTable();
 

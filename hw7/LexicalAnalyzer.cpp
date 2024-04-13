@@ -545,7 +545,8 @@ std::string tokenTypeToString(Token_T t)
         {Token_T::LITERAL, "LITERALT"},
         {Token_T::IDENTIFIER, "IDENTT"},
         {Token_T::NUMBER, "NUMBT"},
-        {Token_T::EOF_T, "EOFT"}
+        {Token_T::EOF_T, "EOFT"},
+        {Token_T::TEMP, "TEMP"}
     };
 
     return dict[t];
@@ -575,6 +576,34 @@ void LexicalAnalyzer::DisplayToken()
 
         default:
             std::cout << "Token Type: " << tokenTypeToString(token.m_token) << ", Lexeme: " << token.m_lexeme << std::endl;
+            break;
+    }
+}
+
+void DisplayToken(Token t)
+{
+    switch (token.m_token)
+    {
+        case Token_T::LITERAL:
+
+            std::cout << "Token Type: " << tokenTypeToString(t.m_token) << ", Literal: '" << t.m_literal << "'" << std::endl;
+            break;
+
+        case Token_T::NUMBER:
+
+            if(t.m_is_int)
+            {
+                std::cout << "Token Type: " << tokenTypeToString(t.m_token) << ", Value: " << t.m_value << std::endl;
+            }
+            else
+            {
+                std::cout << "Token Type: " << tokenTypeToString(t.m_token) << ", Valuer: " << t.m_valuer << std::endl;
+            }
+
+            break;
+
+        default:
+            std::cout << "Token Type: " << tokenTypeToString(t.m_token) << ", Lexeme: " << t.m_lexeme << std::endl;
             break;
     }
 }

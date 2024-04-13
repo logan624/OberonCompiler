@@ -1,12 +1,20 @@
 #ifndef PARSER_H
 
 #include "Parser.h"
+#include "LexicalAnalyzer.h"
+#include "TempMap.h"
+#include "TAC.h"
+
+#include <stack>
+#include <vector>
 
 bool prev_empty;
 SymbolTable st;
 int global_depth;
 int curr_scope_offset;
 std::string curr_procedure;
+std::stack<Token> token_stack;
+TempMap temp_map;
 
 int typeToSize(Var_T type, Token t)
 {
@@ -171,7 +179,7 @@ void Prog()
 
     while (global_depth >= 1)
     {
-        st.WriteTable(global_depth);
+        // st.WriteTable(global_depth);
         st.DeleteDepth(global_depth);
 
         std::cout << "Deleted Depth " << global_depth << std::endl; 
@@ -458,7 +466,7 @@ bool ProcedureDecl()
     checkNextToken(Token_T::SEMICOLON, false);
         
     // Do at the end of each procedure
-    st.WriteTable(global_depth);
+    // st.WriteTable(global_depth);
     st.DeleteDepth(global_depth);
     std::cout << "Deleted Depth " << global_depth << std::endl;
     global_depth--;
@@ -733,21 +741,63 @@ void Statement()
 void AssignStat()
 {
     Token t = token;
-    checkNextToken(Token_T::IDENTIFIER, false);
+    checkNextToken(Token_T::IDENTIFIER, true);
+
     if (st.Lookup(token.m_lexeme) == nullptr)
     {
         std::cout << "ERROR - SEMANTIC ANALYSIS - LINE " << line_no << ": Identifier '"
             << token.m_lexeme << "' not previously declared" << std::endl;
         exit(101);
     }
-    checkNextToken(Token_T::ASSOP, true);
 
+    // Do Proc Call
     if (prev_empty)
     {
         ProcCall();
+
+        // Do the procedure call in assembly (push everything onto stack, call 'ProcName')
+    }
+    else
+    {
+        // Push the identifier being assigned to
+
+        t = token;
+
+        token_stack.push(token);
     }
 
+    checkNextToken(Token_T::ASSOP, true);
+
+    t = token;
+
+    token_stack.push(token);
+
     Expr();
+
+    // Feed assignment statement(s) to the TAC Generator:
+    //     * Process all the tokens that get created
+    //     * Use a stack data structure
+    // -------------------------------------------------
+    // while (token_stack.pop) { Process things }
+
+    std::cout << "STATEMENT:" << std::endl;
+    std::cout << "----------" << std::endl;
+
+    // Preprocess Token Stack
+    //      Create temp variables for the unary operands, parentheses
+    //      since those have the highest precedence
+    TacWriter::preprocStatement();
+
+    // Process Token Stack
+    //      Break multioperation statements down into ones of two max
+
+    while (token_stack.empty() != true)
+    {
+        Token t = token_stack.top();
+        token_stack.pop();
+
+        DisplayToken(t);
+    }
 }
 
 // idt ( Params )
@@ -809,7 +859,6 @@ void Relation()
 // SimpleExpr -> Term MoreTerm
 void SimpleExpr()
 {
-    Token t = token;
     Term();
     MoreTerm();
 }
@@ -819,11 +868,15 @@ void MoreTerm()
 {
     AddOp();
 
-    Token t = token;
-
     if (prev_empty)
     {
         return;
+    }
+    else
+    {
+        // Token temp_flag;
+        // temp_flag.m_token = Token_T::UNKNOWN;
+        // token_stack.push(temp_flag); 
     }
 
     Term();
@@ -846,6 +899,12 @@ void MoreFactor()
     {
         return;
     }
+    else
+    {
+        // Token temp_flag;
+        // temp_flag.m_token = Token_T::UNKNOWN;
+        // token_stack.push(temp_flag);
+    }
 
     Factor();
     MoreFactor();
@@ -863,11 +922,19 @@ void Factor()
 
     if (prev_empty)
     {
+        // Not sure if this right
+        
         SignOp();
         prev_empty = false;
         Factor();
-    }
+        
+        Token temp_flag;
+        temp_flag.m_token = Token_T::UNKNOWN;
+        token_stack.push(temp_flag);
 
+        return;
+    }
+    
     if (token.m_token == Token_T::IDENTIFIER)
     {
         // Ensure used identifiers have been declared previously
@@ -885,14 +952,25 @@ void Factor()
     }
     else if (token.m_token == Token_T::L_SYMBOL)
     {
+            Token temp_flag;
+            temp_flag.m_token = Token_T::UNKNOWN;
+            token_stack.push(temp_flag);
+
             Expr();
+            
             checkNextToken(Token_T::R_SYMBOL, false);
+            token_stack.push(temp_flag);
+            return;
     }
     else if (token.m_token == Token_T::TILDAE)
     {
             Factor();
     }
-    
+
+    t = token;
+
+    token_stack.push(token);
+
     return;
 }
 
@@ -902,18 +980,40 @@ void AddOp()
     std::vector<Token_T> types_to_check = { Token_T::ADDOP, Token_T::MINUS };
 
     checkNextToken(types_to_check, true);
+
+    Token t = token;
+
+    if (!prev_empty)
+    {
+        token_stack.push(token);
+    }
 }
 
 // MulOp -> * | / | DIV | MOD | &
 void MulOp()
 {
     checkNextToken(Token_T::MULOP, true);
+
+    Token t = token;
+
+    if (!prev_empty)
+    {
+        token_stack.push(token);
+    }
 }
 
 // SignOp -> -
 void SignOp()
 {
+    Token t = token;
+
+    Token temp_flag;
+    temp_flag.m_token = Token_T::UNKNOWN;
+    token_stack.push(temp_flag);
+
     checkNextToken(Token_T::MINUS, true);
+
+    token_stack.push(token);
 }
 
 

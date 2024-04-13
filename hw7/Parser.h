@@ -4,6 +4,7 @@
 
 #include "LexicalAnalyzer.h"
 #include "SymTable.h"
+#include "TempMap.h"
 
 extern bool prev_empty;
 extern SymbolTable st;

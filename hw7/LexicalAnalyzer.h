@@ -59,7 +59,10 @@ enum class Token_T {
     IDENTIFIER,
 
     // Number
-    NUMBER
+    NUMBER,
+
+    // Temp - Used in intermediate code generation
+    TEMP
 };
 
 // Token Struct Type
@@ -93,6 +96,7 @@ std::string tokenTypeToString(Token_T t);
 Token processIdentifier();
 Token processNumber();
 Token processLiteral();
+void DisplayToken(Token t);
 
 // Class Declaration
 class LexicalAnalyzer 
