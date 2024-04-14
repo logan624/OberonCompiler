@@ -227,7 +227,11 @@ std::vector<Token> TacWriter::reduceMultiOp()
             last_temp.m_lexeme = std::to_string(temp_key);
             last_temp.m_token = Token_T::TEMP;
 
-            ret.push_back(last_temp);
+            // Might be wrong
+            if (token_stack.empty())
+            {
+                ret.push_back(last_temp);
+            }
 
             first_identifier.m_token = Token_T::UNKNOWN;
             second_identifier.m_token = Token_T::UNKNOWN;
@@ -308,9 +312,9 @@ std::vector<Token> TacWriter::reduceMultiOp()
             }
         }
     }
-    
 
     // Logic
+    temp_map.getTemp(1);
 
     return ret;
 }
