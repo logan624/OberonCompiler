@@ -93,8 +93,9 @@ void TacWriter::preprocStatement()
     }
 
     token_stack = new_stack;
-    reduceMultiOp();
+    std::vector<Token> stats = reduceMultiOp();
 
+    std::cout << "";
     // while (token_stack.empty() != true)
     // {
     //     Token t = token_stack.top();
@@ -430,14 +431,18 @@ std::vector<Token> TacWriter::reduceTempMultiOp(std::stack<Token> p_stack)
             }
             else
             {
+                ret.push_back(t);
+
+                ret.push_back(operation);
+
                 if (insert_next == true)
                 {
                     insert_next = false;
                     ret.push_back(last_temp);
                 }
 
-                ret.push_back(operation);
-                ret.push_back(t);
+                
+                
             }
 
             additional_op = false;

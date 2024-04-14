@@ -780,13 +780,12 @@ void AssignStat()
     // -------------------------------------------------
     // while (token_stack.pop) { Process things }
 
-    std::cout << "STATEMENT:" << std::endl;
-    std::cout << "----------" << std::endl;
-
     // Preprocess Token Stack
     //      Create temp variables for the unary operands, parentheses
     //      since those have the highest precedence
     TacWriter::preprocStatement();
+
+    TempMap tm = temp_map;
 
     // Process Token Stack
     //      Break multioperation statements down into ones of two max
