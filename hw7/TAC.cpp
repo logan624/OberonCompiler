@@ -92,14 +92,15 @@ void TacWriter::preprocStatement()
     }
 
     token_stack = new_stack;
+    reduceMultiOp();
 
-    while (token_stack.empty() != true)
-    {
-        Token t = token_stack.top();
-        token_stack.pop();
+    // while (token_stack.empty() != true)
+    // {
+    //     Token t = token_stack.top();
+    //     token_stack.pop();
 
-        DisplayToken(t);
-    }
+    //     DisplayToken(t);
+    // }
 }
 
 void TacWriter::procStatement()
@@ -108,13 +109,96 @@ void TacWriter::procStatement()
     //      Break multioperation statements down into ones of two max
 }
 
-std::vector<std::stack<Token>> TacWriter::reduceMultiOp(std::stack<Token> s)
+std::vector<std::stack<Token>> TacWriter::reduceMultiOp()
 {
     std::vector<std::stack<Token>> ret;
 
-    // Flag variables to indicate when to break into a temp
+    // Have to reverse the token_stack
+    // -------------------------------
+    std::stack<Token> rev_stack;
 
+    while (!token_stack.empty())
+    {
+        Token tok = token_stack.top();
+        token_stack.pop();
+
+        rev_stack.push(tok);
+    }
+
+    token_stack = rev_stack;
+    // -------------------------------
+
+    // Flag variables to indicate when to break into a temp
+    bool first = false;
+    bool first_op = false;
+    bool first_op_second = false;
+
+    // First identifier
+    Token first_identifier;
+    first_identifier.m_token = Token_T::UNKNOWN;
+    // Operation
+    Token operation;
+    operation.m_token = Token_T::UNKNOWN;
+    // Second Identifier
+    Token second_identifier;
+    second_identifier.m_token = Token_T::UNKNOWN;
+
+    std::stack<Token> test = token_stack;
+
+    while(!token_stack.empty())
+    {
+        Token t = token_stack.top();
+        token_stack.pop();
+
+        // If nothing has been read in yet
+        if (!first)
+        {
+            
+        }
+        else
+        {
+            // If something has been read in already
+            if (first)
+            {
+                
+            }
+            else if (first_op)
+            {
+                
+            }
+            else if (first_op_second)
+            {
+                
+            }
+        }
+
+        // Logic to set the flags
+        if (first_identifier.m_token == Token_T::UNKNOWN)
+        {
+            if (operation.m_token == Token_T::UNKNOWN)
+            {
+                if (second_identifier.m_token == Token_T::UNKNOWN)
+                {
+
+                }
+                else
+                {
+                    first_op_second = true;
+                }
+            }
+            else
+            {
+                first_op = true;
+            }
+        }
+        else
+        {
+            first = true;
+        }
+    }
     
+
+    // Logic
 
     return ret;
 }

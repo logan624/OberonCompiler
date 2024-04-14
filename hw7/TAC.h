@@ -18,7 +18,7 @@ class TacWriter
 
         static void preprocStatement();
         static void procStatement();         
-        static std::vector<std::stack<Token>> reduceMultiOp(std::stack<Token> s);
+        static std::vector<std::stack<Token>> reduceMultiOp();
         static Token handleNestedTemp();
         static Token handleNestedTemp(bool recursive);
 
