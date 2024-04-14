@@ -109,9 +109,9 @@ void TacWriter::procStatement()
     //      Break multioperation statements down into ones of two max
 }
 
-std::vector<std::stack<Token>> TacWriter::reduceMultiOp()
+std::vector<Token> TacWriter::reduceMultiOp()
 {
-    std::vector<std::stack<Token>> ret;
+    std::vector<Token> ret;
 
     std::stack<Token> new_stack;
 
@@ -140,6 +140,7 @@ std::vector<std::stack<Token>> TacWriter::reduceMultiOp()
     bool first = false;
     bool first_op = false;
     bool first_op_second = false;
+    bool additional_op = false;
 
     // First identifier
     Token first_identifier;
@@ -151,19 +152,8 @@ std::vector<std::stack<Token>> TacWriter::reduceMultiOp()
     Token second_identifier;
     second_identifier.m_token = Token_T::UNKNOWN;
 
-    // Reverse the token stack
-    // -------------------------
-    std::stack<Token> temp;
-
-    while (!token_stack.empty())
-    {
-        temp.push(token_stack.top());
-        token_stack.pop();
-    }
-    token_stack = temp;
-    // -------------------------
-
     std::stack<Token> test = token_stack;
+    Token last_temp;
 
     while(!token_stack.empty())
     {
@@ -183,48 +173,98 @@ std::vector<std::stack<Token>> TacWriter::reduceMultiOp()
             is_var = true;
         }
 
+        if (additional_op)
+        {
+            // Right after reading in an additional operation
+            if (!token_stack.empty())
+            {
+                if (is_var)
+                {
+                    first_identifier = last_temp;
+                    operation = operation;
+                    second_identifier = t;
+
+                    std::stack<Token> temp_s;
+                    temp_s.push(second_identifier);
+                    temp_s.push(operation);
+                    temp_s.push(first_identifier);
+                    
+                    int temp_key = temp_map.insertTemp(temp_s);
+                    last_temp.m_lexeme = std::to_string(temp_key);
+                    last_temp.m_token = Token_T::TEMP;
+
+                    ret.push_back(last_temp);
+
+                    first_identifier.m_token = Token_T::UNKNOWN;
+                    second_identifier.m_token = Token_T::UNKNOWN;
+                    operation.m_token = Token_T::UNKNOWN;
+                }
+            }
+            else
+            {
+                ret.push_back(operation);
+                ret.push_back(t);
+            }
+
+            additional_op = false;
+
+            continue;
+        }
+
+        // If there is a token left after reading 'var op var'
+        if (first_op_second)
+        {
+            first = false;
+            first_op = false;
+            first_op_second = false;
+
+            std::stack<Token> temp_s;
+            temp_s.push(second_identifier);
+            temp_s.push(operation);
+            temp_s.push(first_identifier);
+            
+            int temp_key = temp_map.insertTemp(temp_s);
+            last_temp.m_lexeme = std::to_string(temp_key);
+            last_temp.m_token = Token_T::TEMP;
+
+            ret.push_back(last_temp);
+
+            first_identifier.m_token = Token_T::UNKNOWN;
+            second_identifier.m_token = Token_T::UNKNOWN;
+            operation.m_token = Token_T::UNKNOWN;
+        }
+
         // If nothing has been read in yet
         if (!first)
         {
             if (is_var)
             {
-
+                first_identifier = t;
             }
-            else if (is_multi_op)
+            else
             {
-
+                additional_op = true;
             }
         }
         else
         {
             // If something has been read in already
-            if (first)
+            if (first == true && first_op == false)
             {
                 if (is_var)
-                {
-
-                }
-                else if (is_multi_op)
                 {
                     
                 }
-            }
-            else if (first_op)
-            {
-                if (is_var)
-                {
-
-                }
                 else if (is_multi_op)
                 {
-                    
+                    operation = t;
                 }
             }
-            else if (first_op_second)
+            else if (first_op == true && first_op_second == false)
             {
                 if (is_var)
                 {
-
+                    second_identifier = t;
                 }
                 else if (is_multi_op)
                 {
@@ -233,11 +273,30 @@ std::vector<std::stack<Token>> TacWriter::reduceMultiOp()
             }
         }
 
+        if (additional_op == true)
+        {
+            operation = t;
+
+            continue;
+        }
+
         // Logic to set the flags
         if (first_identifier.m_token == Token_T::UNKNOWN)
         {
+
+        }
+        else
+        {
+            first = true;
+
             if (operation.m_token == Token_T::UNKNOWN)
             {
+            
+            }
+            else
+            {
+                first_op = true;
+
                 if (second_identifier.m_token == Token_T::UNKNOWN)
                 {
 
@@ -247,14 +306,6 @@ std::vector<std::stack<Token>> TacWriter::reduceMultiOp()
                     first_op_second = true;
                 }
             }
-            else
-            {
-                first_op = true;
-            }
-        }
-        else
-        {
-            first = true;
         }
     }
     
