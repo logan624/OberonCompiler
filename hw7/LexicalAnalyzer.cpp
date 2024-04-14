@@ -546,6 +546,8 @@ std::string tokenTypeToString(Token_T t)
         {Token_T::IDENTIFIER, "IDENTT"},
         {Token_T::NUMBER, "NUMBT"},
         {Token_T::EOF_T, "EOFT"},
+        {Token_T::TEMP_BEGIN, "TEMP_BEGIN"},
+        {Token_T::TEMP_END, "TEMP_END"},
         {Token_T::TEMP, "TEMP"}
     };
 

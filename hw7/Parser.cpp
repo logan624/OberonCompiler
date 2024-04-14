@@ -929,7 +929,7 @@ void Factor()
         Factor();
         
         Token temp_flag;
-        temp_flag.m_token = Token_T::UNKNOWN;
+        temp_flag.m_token = Token_T::TEMP_END;
         token_stack.push(temp_flag);
 
         return;
@@ -953,12 +953,14 @@ void Factor()
     else if (token.m_token == Token_T::L_SYMBOL)
     {
             Token temp_flag;
-            temp_flag.m_token = Token_T::UNKNOWN;
+            temp_flag.m_token = Token_T::TEMP_BEGIN;
             token_stack.push(temp_flag);
 
             Expr();
             
             checkNextToken(Token_T::R_SYMBOL, false);
+
+            temp_flag.m_token = Token_T::TEMP_END;
             token_stack.push(temp_flag);
             return;
     }
@@ -1008,7 +1010,7 @@ void SignOp()
     Token t = token;
 
     Token temp_flag;
-    temp_flag.m_token = Token_T::UNKNOWN;
+    temp_flag.m_token = Token_T::TEMP_BEGIN;
     token_stack.push(temp_flag);
 
     checkNextToken(Token_T::MINUS, true);

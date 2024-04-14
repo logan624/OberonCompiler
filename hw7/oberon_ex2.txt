@@ -5,7 +5,7 @@ VAR x, y, z: INTEGER;
 PROCEDURE Proc1;
 VAR localX, localY: INTEGER;
 BEGIN
-  (*localX := 10;*)
+  (*localX := ( (  -10 ) );*)
   (*localY := localX + 5;*)
   localX := localY * (localX - 2) * localX - -localY;
   (*localX := localX DIV 2;*)

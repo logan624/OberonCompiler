@@ -62,6 +62,8 @@ enum class Token_T {
     NUMBER,
 
     // Temp - Used in intermediate code generation
+    TEMP_BEGIN,
+    TEMP_END,
     TEMP
 };
 
