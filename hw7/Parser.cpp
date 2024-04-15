@@ -164,6 +164,8 @@ void Prog()
     global_depth++;
 
     DeclarativePart(p_to_proc);
+
+    std::cout << "Proc\t" << module_name.m_lexeme << std::endl;
     StatementPart();
     checkNextToken(Token_T::END, false);
     checkNextToken(Token_T::IDENTIFIER, false);
@@ -182,7 +184,7 @@ void Prog()
         // st.WriteTable(global_depth);
         st.DeleteDepth(global_depth);
 
-        std::cout << "Deleted Depth " << global_depth << std::endl; 
+        // std::cout << "Deleted Depth " << global_depth << std::endl; 
 
         global_depth--;
     }
@@ -468,7 +470,7 @@ bool ProcedureDecl()
     // Do at the end of each procedure
     // st.WriteTable(global_depth);
     st.DeleteDepth(global_depth);
-    std::cout << "Deleted Depth " << global_depth << std::endl;
+    // std::cout << "Deleted Depth " << global_depth << std::endl;
     global_depth--;
 
     return false;
@@ -491,6 +493,8 @@ std::pair<bool, TableRecord *> ProcHeading()
     }
     checkNextToken(Token_T::IDENTIFIER, false);
     curr_procedure = token.m_lexeme;
+
+    std::cout << "Proc\t" << curr_procedure << std::endl;
 
     // Insert the Procedure - FIX IF NEEDED
     TableRecord * p_to_proc;
@@ -684,6 +688,18 @@ void StatementPart()
     }
 
     SeqOfStatements();
+
+    if (global_depth > 1)
+    {
+        std::cout << "Endp\t" << curr_procedure << std::endl;
+    }
+    else
+    {
+
+    }
+
+    temp_map = TempMap();
+    std::cout << std::endl;
 }
 
 // SeqOfStatements -> e
@@ -784,8 +800,6 @@ void AssignStat()
     //      Create temp variables for the unary operands, parentheses
     //      since those have the highest precedence
     TacWriter::preprocStatement();
-
-    TempMap tm = temp_map;
 
     // Process Token Stack
     //      Break multioperation statements down into ones of two max
