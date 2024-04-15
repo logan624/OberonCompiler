@@ -584,28 +584,28 @@ void LexicalAnalyzer::DisplayToken()
 
 void DisplayToken(Token t)
 {
-    switch (token.m_token)
+    switch (t.m_token)
     {
         case Token_T::LITERAL:
 
-            std::cout << "Token Type: " << tokenTypeToString(t.m_token) << ", Literal: '" << t.m_literal << "'" << std::endl;
+            std::cout << "'" << t.m_literal << "'";
             break;
 
         case Token_T::NUMBER:
 
             if(t.m_is_int)
             {
-                std::cout << "Token Type: " << tokenTypeToString(t.m_token) << ", Value: " << t.m_value << std::endl;
+                std::cout << t.m_value;
             }
             else
             {
-                std::cout << "Token Type: " << tokenTypeToString(t.m_token) << ", Valuer: " << t.m_valuer << std::endl;
+                std::cout << t.m_valuer;
             }
 
             break;
 
         default:
-            std::cout << "Token Type: " << tokenTypeToString(t.m_token) << ", Lexeme: " << t.m_lexeme << std::endl;
+            std::cout << t.m_lexeme;
             break;
     }
 }

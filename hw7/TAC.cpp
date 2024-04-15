@@ -95,7 +95,49 @@ void TacWriter::preprocStatement()
     token_stack = new_stack;
     std::vector<Token> stats = reduceMultiOp();
 
-    std::cout << "";
+    for(int i = 0 ; i < stats.size(); i++)
+    {
+        if (stats[i].m_token == Token_T::TEMP)
+        {
+            temp_map.writeTemp(std::stoi(stats[i].m_lexeme), false);
+        }
+    }
+
+    for(int i = 0 ; i < stats.size(); i++)
+    {
+        if (stats[i].m_token == Token_T::TEMP)
+        {
+            std::cout << "_t" << std::stoi(stats[i].m_lexeme);
+        }
+        else
+        {
+            DisplayToken(stats[i]);
+        }
+
+        std::cout << " ";
+    }
+
+    std::cout << std::endl;
+
+    // for(int i = 0 ; i < stats.size(); i++)
+    // {
+    //     if (stats[i].m_token == Token_T::TEMP)
+    //     {
+    //         temp_map.writeTemp(std::stoi(stats[i].m_lexeme));
+    //     }
+    //     else
+    //     {
+    //         std::cout << stats[i].m_lexeme;
+    //     }
+
+    //     std::cout << " ";
+
+    //     if (i == stats.size() - 1)
+    //     {
+    //         std::cout << std::endl;
+    //     }
+    // }
+
     // while (token_stack.empty() != true)
     // {
     //     Token t = token_stack.top();

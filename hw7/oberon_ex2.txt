@@ -8,9 +8,9 @@ BEGIN
   (*localX := 5;*)
   (*localX := ( (  -10 ) );*)
   localY := ((localX + 5 - 7) - 6 + 7);
-  localX := localY;
-  localX := 5 - 6;
-  localX := 9 - 8 - 7;
+  (*localX := localY;*)
+  (*localX := 5 - 6;*)
+  (*localX := 9 - 8 - 7;*)
   (*localX := localY * (localX - 2 + 9) * localX - -localY;*)
   (*localX := localX DIV 2;*)
   (*localX := localY MOD 3;*)
