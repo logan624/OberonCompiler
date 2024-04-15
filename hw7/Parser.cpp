@@ -15,6 +15,7 @@ int curr_scope_offset;
 std::string curr_procedure;
 std::stack<Token> token_stack;
 TempMap temp_map;
+TacWriter tac_writer;
 
 int typeToSize(Var_T type, Token t)
 {
@@ -141,6 +142,8 @@ void checkNextToken(std::vector<Token_T> expected_options, bool empty_ok)
 // Prog -> modulet idt ; DeclarativePart StatementPart endt idt
 void Prog()
 {
+    tac_writer.setupOffsetMap();
+
     prev_empty = false;
     global_depth = 1;
 
@@ -156,6 +159,7 @@ void Prog()
     p_to_proc = st.LookupAtCurrentDepth(token.m_lexeme);
     p_to_proc->m_entry = Entry_Type::FUNCTION;
 
+    // # TODO
     module_name = token;
 
     Token t = token;
@@ -167,6 +171,8 @@ void Prog()
 
     std::cout << "Proc\t" << module_name.m_lexeme << std::endl;
     StatementPart();
+
+    std::cout << "Start proc " << module_name.m_lexeme << std::endl << std::endl;
     checkNextToken(Token_T::END, false);
     checkNextToken(Token_T::IDENTIFIER, false);
 
@@ -323,11 +329,15 @@ int VarTail()
 
     int size_of_vars = 0;
 
+    std::vector<std::string> names_for_offsets;
+
     // Insert the variables as this type into the symbol table
     for (long int i = 0; i < vars_to_insert.size(); i++)
     {
         TableRecord * p_rec;
         TableRecord rec;
+
+        names_for_offsets.push_back(vars_to_insert[i].first.m_lexeme);
 
         if (st.LookupAtCurrentDepth(vars_to_insert[i].first.m_lexeme) == nullptr)
         {
@@ -352,6 +362,9 @@ int VarTail()
         curr_scope_offset += p_rec->item.variable.m_size;
         size_of_vars += p_rec->item.variable.m_size;
     }
+
+    // # TODO
+    tac_writer.addLocalVars(names_for_offsets, global_depth);
 
     return size_of_vars;
 }
@@ -540,6 +553,7 @@ std::pair<bool, TableRecord *> ProcHeading()
     // Increment the global depth, and insert the parameters
     global_depth++;
 
+
     curr_scope_offset = 0;
     
     for (int i = 0; i < params_to_insert.size(); i++)
@@ -581,6 +595,10 @@ std::pair<bool, TableRecord *> ProcHeading()
     p_to_proc->item.procedure.param_info = head;
 
     ret.second = p_to_proc;
+
+    // # TODO
+    tac_writer.addParams(p_to_proc, global_depth);
+
     return ret;
 }
 

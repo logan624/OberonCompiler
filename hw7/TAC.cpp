@@ -4,19 +4,65 @@
 #include "TAC.h"
 #include "Parser.h"
 
+extern SymbolTable st;
 extern TempMap temp_map;
+extern std::string curr_procedure;
 
 void TacWriter::writeFile()
 {
 
 }
 
-void TacWriter::writeOperation()
+void TacWriter::addParams(TableRecord * tr, int depth)
 {
 
+    // Start at +4
+    int current_offset = 4;
+
+    ParameterInfo * node = tr->item.procedure.param_info;
+    while (node != nullptr)
+    {
+        // Look up in the symbol table
+        Token param_token;
+        param_token = node->m_token;
+
+        int param_size = typeToSize(node->m_type, param_token);
+
+        // Set the offset correctly
+        current_offset = current_offset + param_size;
+
+        std::pair<Token, int> ele(param_token, current_offset);
+        offset_map[depth - 1].second.push_back(ele);
+
+        node = node->next_node;
+    }
+
+    return;
 }
 
-void TacWriter::writeAssignment()
+void TacWriter::addLocalVars(std::vector<std::string> vars, int depth)
+{
+    // Start at -2
+    int current_offset = -2;
+
+    for (const std::string var : vars)
+    {
+        // Look up in the symbol table
+        TableRecord * r = st.LookupAtCurrentDepth(var);
+        int var_size = r->item.variable.m_size;
+        Token var_token = r->m_token;
+
+        // Set the offset correctly
+        current_offset = current_offset - var_size;
+
+        std::pair<Token, int> ele(var_token, current_offset);
+        offset_map[depth - 1].second.push_back(ele);
+    }
+
+    return;
+}
+
+void TacWriter::addTemp()
 {
 
 }
@@ -145,12 +191,6 @@ void TacWriter::preprocStatement()
 
     //     DisplayToken(t);
     // }
-}
-
-void TacWriter::procStatement()
-{
-    // Process Token Stack
-    //      Break multioperation statements down into ones of two max
 }
 
 // Returns vector of tokens if it could reduce stuff, otherwise retrns nothing
