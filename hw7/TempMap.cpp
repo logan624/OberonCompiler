@@ -67,7 +67,7 @@ void TempMap::writeTemp(int index, bool recursive)
     }
     else
     {
-        tac_file << "_bp" << std::to_string(curr_scope_offset - (index * 2)) << " := ";
+        tac_file << "_bp" << std::to_string(curr_scope_offset - ((index - 1) * 2)) << " := ";
     }
 
     for (int i = 0; i < vec.size(); i++)
@@ -84,7 +84,7 @@ void TempMap::writeTemp(int index, bool recursive)
             }
             else
             {
-                tac_file << "_bp" << std::to_string(curr_scope_offset - (key * 2));
+                tac_file << "_bp" << std::to_string(curr_scope_offset - ((key - 1) * 2));
             }
         }
         else

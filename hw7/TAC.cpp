@@ -59,7 +59,7 @@ std::string TacWriter::printVar(Token t)
         }
         else
         {
-            int offset = curr_scope_offset - (2 * std::stoi(t.m_lexeme));
+            int offset = curr_scope_offset - (2 * (std::stoi(t.m_lexeme) - 1));
             ret = "_bp" + std::to_string(offset);
         }
     }
@@ -85,7 +85,7 @@ std::string TacWriter::printVar(Token t)
 
                 int offset = tr->item.variable.m_offset;
 
-                ret += "_bp-" + std::to_string(offset); 
+                ret += "_bp" + std::to_string(offset); 
             }
             // If it is a parameter
             else
@@ -175,6 +175,7 @@ void TacWriter::addLocalVars(std::vector<std::string> vars, int depth)
         // {
         //     current_offset = current_offset - var_size;
         // }
+        r->item.variable.m_offset = current_offset;
 
         current_offset = current_offset - var_size;
 
@@ -284,7 +285,7 @@ void TacWriter::preprocStatement()
             }
             else
             {
-                tac_file << "_bp" << std::to_string(curr_scope_offset - (std::stoi(stats[i].m_lexeme) * 2));
+                tac_file << "_bp" << std::to_string(curr_scope_offset - ((std::stoi(stats[i].m_lexeme) - 1) * 2));
             }
         }
         else
