@@ -25,6 +25,7 @@ std::string TacWriter::printVar(Token t)
         {
             if (node->m_token.m_lexeme == t.m_lexeme)
             {
+                is_param = true;
                 param_offset = node->m_offset;
                 if (node->m_mode == Param_Mode::REF)
                 {
@@ -81,7 +82,7 @@ std::string TacWriter::printVar(Token t)
 
                 int offset = tr->item.variable.m_offset;
 
-                ret += "bp" + std::to_string(offset); 
+                ret += "_bp-" + std::to_string(offset); 
             }
             // If it is a parameter
             else
@@ -91,7 +92,7 @@ std::string TacWriter::printVar(Token t)
                     ret += "@";
                 }
 
-                ret += "bp+" + std::to_string(param_offset);
+                ret += "_bp+" + std::to_string(param_offset);
             }
         }
     }
@@ -134,6 +135,7 @@ void TacWriter::addParams(TableRecord * tr, int depth)
         param_token = node->m_token;
 
         int param_size = typeToSize(node->m_type, param_token);
+        node->m_offset = current_offset;
 
         // Set the offset correctly
         current_offset = current_offset + param_size;
@@ -152,6 +154,8 @@ void TacWriter::addLocalVars(std::vector<std::string> vars, int depth)
     // Start at -2
     int current_offset = -2;
 
+    bool first = true;
+
     for (const std::string var : vars)
     {
         // Look up in the symbol table
@@ -160,6 +164,15 @@ void TacWriter::addLocalVars(std::vector<std::string> vars, int depth)
         Token var_token = r->m_token;
 
         // Set the offset correctly
+        // if (first)
+        // {
+        //     first = false;
+        // }
+        // else
+        // {
+        //     current_offset = current_offset - var_size;
+        // }
+
         current_offset = current_offset - var_size;
 
         std::pair<Token, int> ele(var_token, current_offset);
@@ -264,7 +277,7 @@ void TacWriter::preprocStatement()
         {
             if (global_depth == 2)
             {
-                std::cout << "_t" << stats[i].m_lexeme << " := ";
+                std::cout << "_t" << stats[i].m_lexeme;
             }
             else
             {
@@ -274,7 +287,7 @@ void TacWriter::preprocStatement()
         else
         {
             // DisplayToken(stats[i]);
-            TacWriter::printVar(stats[i]);
+            std::cout << TacWriter::printVar(stats[i]);
         }
 
         std::cout << " ";

@@ -331,6 +331,8 @@ int VarTail()
 
     std::vector<std::string> names_for_offsets;
 
+    curr_scope_offset = curr_scope_offset - 2;
+
     // Insert the variables as this type into the symbol table
     for (long int i = 0; i < vars_to_insert.size(); i++)
     {
@@ -775,6 +777,7 @@ void Statement()
 void AssignStat()
 {
     Token t = token;
+
     checkNextToken(Token_T::IDENTIFIER, true);
 
     if (st.Lookup(token.m_lexeme) == nullptr)
@@ -788,6 +791,7 @@ void AssignStat()
     if (prev_empty)
     {
         ProcCall();
+        t = token;
 
         // Do the procedure call in assembly (push everything onto stack, call 'ProcName')
     }
@@ -801,6 +805,22 @@ void AssignStat()
     }
 
     checkNextToken(Token_T::ASSOP, true);
+
+    if (prev_empty)
+    {
+        // std::stack<Token> test_stack = token_stack;
+        std::string proc_name = t.m_lexeme;
+        ProcCall();
+        std::cout << "Call " << proc_name << std::endl;
+
+        while(!token_stack.empty())
+        {
+            token_stack.pop();
+        }
+
+        // Do the procedure call in assembly (push everything onto stack, call 'ProcName')
+        return;
+    }
 
     t = token;
 
@@ -843,6 +863,8 @@ void Params()
 {
     std::vector<Token_T> types_to_check = {Token_T::IDENTIFIER, Token_T::NUMBER};
     checkNextToken(types_to_check, true);
+
+    Token test = token;
 
     if (prev_empty)
     {
