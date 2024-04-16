@@ -174,7 +174,7 @@ void Prog()
 
     DeclarativePart(p_to_proc);
 
-    cout << /**/ "proc\t" << module_name.m_lexeme << std::endl << std::endl;
+    tac_file << "proc\t" << module_name.m_lexeme << std::endl << std::endl;
     main_module_name = module_name.m_lexeme;
     StatementPart();
 
@@ -202,7 +202,7 @@ void Prog()
 
     checkNextToken(Token_T::EOF_T, false);
 
-    cout << /**/ "start proc " << module_name.m_lexeme << std::endl << std::endl;
+    tac_file << "start proc " << module_name.m_lexeme << std::endl << std::endl;
 }
 
 // DeclarativePart -> ConstPart VarPart ProcPart
@@ -520,7 +520,7 @@ std::pair<bool, TableRecord *> ProcHeading()
     checkNextToken(Token_T::IDENTIFIER, false);
     curr_procedure = token.m_lexeme;
 
-    cout << /**/ "proc\t" << curr_procedure << std::endl << std::endl;
+    tac_file << "proc\t" << curr_procedure << std::endl << std::endl;
 
     // Insert the Procedure - FIX IF NEEDED
     TableRecord * p_to_proc;
@@ -727,11 +727,11 @@ void StatementPart()
 
         if (global_depth == 2 || global_depth == 1)
         {
-            cout << /**/ "endp proc " << curr_procedure << std::endl;
+            tac_file << "endp proc " << curr_procedure << std::endl;
         }
         else
         {
-            cout << /**/ "endp\t" << curr_procedure << std::endl;
+            tac_file << "endp\t" << curr_procedure << std::endl;
         }
         
     }
@@ -741,7 +741,7 @@ void StatementPart()
     }
 
     temp_map = TempMap();
-    cout << /**/ std::endl;
+    tac_file << std::endl;
 }
 
 // SeqOfStatements -> e
@@ -833,7 +833,7 @@ void AssignStat()
         // std::stack<Token> test_stack = token_stack;
         std::string proc_name = t.m_lexeme;
         ProcCall();
-        cout << /**/ "call " << proc_name << std::endl << std::endl;
+        tac_file << "call " << proc_name << std::endl << std::endl;
 
         while(!token_stack.empty())
         {
@@ -882,7 +882,7 @@ void ProcCall()
 
     for (std::string param : params)
     {
-        cout << /**/ "push " << param << std::endl;
+        tac_file << "push " << param << std::endl;
     }
 
     checkNextToken(Token_T::R_SYMBOL, false);

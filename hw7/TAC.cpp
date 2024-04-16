@@ -292,24 +292,24 @@ void TacWriter::preprocStatement()
         {
             if (global_depth == 2)
             {
-                cout << /**/ "_t" << stats[i].m_lexeme;
+                tac_file << "_t" << stats[i].m_lexeme;
             }
             else
             {
                 int test = curr_scope_offset - ((std::stoi(stats[i].m_lexeme) - 1) * 2);
-                cout << /**/ "_bp" << std::to_string(curr_scope_offset - ((std::stoi(stats[i].m_lexeme) - 1) * 2));
+                tac_file << "_bp" << std::to_string(curr_scope_offset - ((std::stoi(stats[i].m_lexeme) - 1) * 2));
             }
         }
         else
         {
             // DisplayToken(stats[i]);
-            cout << /**/ TacWriter::printVar(stats[i]);
+            tac_file << TacWriter::printVar(stats[i]);
         }
 
-        cout << /**/ " ";
+        tac_file << " ";
     }
 
-    cout << /**/ std::endl << std::endl;
+    tac_file << std::endl << std::endl;
 }
 
 // Returns vector of tokens if it could reduce stuff, otherwise retrns nothing

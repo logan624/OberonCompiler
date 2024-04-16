@@ -62,16 +62,16 @@ void TempMap::writeTemp(int index, bool recursive)
         tokenStack->pop();
     }
 
-    // cout << /**/ "_t" << index << " := ";
+    // tac_file << "_t" << index << " := ";
     if (global_depth == 2)
     {
-        cout << /**/ "_t" << index << " = ";
+        tac_file << "_t" << index << " = ";
     }
     else
     {
         int off = curr_scope_offset;
         std::string test = "_bp" + std::to_string(curr_scope_offset - ((index - 1) * 2)) + " = ";
-        cout << /**/ "_bp" << std::to_string(curr_scope_offset - ((index - 1) * 2)) << " = ";
+        tac_file << "_bp" << std::to_string(curr_scope_offset - ((index - 1) * 2)) << " = ";
     }
 
     for (int i = 0; i < vec.size(); i++)
@@ -80,26 +80,26 @@ void TempMap::writeTemp(int index, bool recursive)
         {
             // Key
             int key = std::stoi(vec[i].m_lexeme);
-            // cout << /**/ "_t" << std::to_string(key);
+            // tac_file << "_t" << std::to_string(key);
 
             if (global_depth == 2)
             {
-                cout << /**/ "_t" << std::to_string(key) << " = ";
+                tac_file << "_t" << std::to_string(key) << " = ";
             }
             else
             {
-                cout << /**/ "_bp" << std::to_string(curr_scope_offset - ((key - 1) * 2));
+                tac_file << "_bp" << std::to_string(curr_scope_offset - ((key - 1) * 2));
             }
         }
         else
         {
             // Print the lexeme of the top token.
             // DisplayToken(vec[i]);  
-            cout << /**/ TacWriter::printVar(vec[i]);  
+            tac_file << TacWriter::printVar(vec[i]);  
         }
 
-        cout << /**/ " ";
+        tac_file << " ";
     }
 
-    cout << /**/ std::endl;
+    tac_file << std::endl;
 }
