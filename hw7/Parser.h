@@ -117,10 +117,10 @@ void SignOp();
 void ProcCall();
 
 // idt ParamsTail | num ParamsTail | e
-void Params();
+std::vector<std::string> Params();
 
 // , idt ParamsTail | , num ParamsTail | e
-void ParamsTail();
+void ParamsTail(std::vector<std::string>  & params);
 
 int typeToSize(Var_T type, Token t);
 Var_T tokenTypeToVarType(Token_T);

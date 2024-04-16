@@ -4,6 +4,7 @@
 #include "LexicalAnalyzer.h"
 #include "TempMap.h"
 #include "TAC.h"
+#include <sstream>
 
 #include <stack>
 #include <vector>
@@ -16,6 +17,7 @@ std::string curr_procedure;
 std::stack<Token> token_stack;
 TempMap temp_map;
 TacWriter tac_writer;
+std::ostringstream tac_file;
 
 int typeToSize(Var_T type, Token t)
 {
@@ -169,10 +171,9 @@ void Prog()
 
     DeclarativePart(p_to_proc);
 
-    std::cout << "Proc\t" << module_name.m_lexeme << std::endl;
+    tac_file << "Proc\t" << module_name.m_lexeme << std::endl << std::endl;
     StatementPart();
 
-    std::cout << "Start proc " << module_name.m_lexeme << std::endl << std::endl;
     checkNextToken(Token_T::END, false);
     checkNextToken(Token_T::IDENTIFIER, false);
 
@@ -196,6 +197,8 @@ void Prog()
     }
 
     checkNextToken(Token_T::EOF_T, false);
+
+    tac_file << "Start proc " << module_name.m_lexeme << std::endl << std::endl;
 }
 
 // DeclarativePart -> ConstPart VarPart ProcPart
@@ -509,7 +512,7 @@ std::pair<bool, TableRecord *> ProcHeading()
     checkNextToken(Token_T::IDENTIFIER, false);
     curr_procedure = token.m_lexeme;
 
-    std::cout << "Proc\t" << curr_procedure << std::endl;
+    tac_file << "Proc\t" << curr_procedure << std::endl << std::endl;
 
     // Insert the Procedure - FIX IF NEEDED
     TableRecord * p_to_proc;
@@ -711,7 +714,7 @@ void StatementPart()
 
     if (global_depth > 1)
     {
-        std::cout << "Endp\t" << curr_procedure << std::endl;
+        tac_file << "Endp\t" << curr_procedure << std::endl;
     }
     else
     {
@@ -719,7 +722,7 @@ void StatementPart()
     }
 
     temp_map = TempMap();
-    std::cout << std::endl;
+    tac_file << std::endl;
 }
 
 // SeqOfStatements -> e
@@ -811,7 +814,7 @@ void AssignStat()
         // std::stack<Token> test_stack = token_stack;
         std::string proc_name = t.m_lexeme;
         ProcCall();
-        std::cout << "Call " << proc_name << std::endl;
+        tac_file << "Call " << proc_name << std::endl << std::endl;
 
         while(!token_stack.empty())
         {
@@ -855,12 +858,21 @@ void AssignStat()
 void ProcCall()
 {
     checkNextToken(Token_T::L_SYMBOL, false);
-    Params();
+    
+    std::vector<std::string> params = Params();
+
+    for (std::string param : params)
+    {
+        tac_file << "push " << param << std::endl;
+    }
+
     checkNextToken(Token_T::R_SYMBOL, false);
 }
 
-void Params()
+// idt ParamsTail | num ParamsTail | e
+std::vector<std::string> Params()
 {
+    std::vector<std::string> params;
     std::vector<Token_T> types_to_check = {Token_T::IDENTIFIER, Token_T::NUMBER};
     checkNextToken(types_to_check, true);
 
@@ -868,15 +880,37 @@ void Params()
 
     if (prev_empty)
     {
-        return;
+        return params;
     }
     else
     {
-        ParamsTail();
+        if (token.m_token == Token_T::NUMBER)
+        {
+            params.push_back(TacWriter::printVar(token));
+        }
+        else
+        {
+            TableRecord * tr = st.LookupAtCurrentDepth(token.m_lexeme);
+
+            if (tr == nullptr)
+            {
+                std::cout << "ERROR - PARSING - LINE " << line_no << ": Param '" << token.m_lexeme << "' not previously declared" << std::endl;
+                exit(101);
+            }
+            else
+            {
+                params.push_back(TacWriter::printVar(token));
+            }
+        }
+
+        ParamsTail(params);
     }
+
+    return params;
 }
 
-void ParamsTail()
+// , idt ParamsTail | , num ParamsTail | e
+void ParamsTail(std::vector<std::string>  & params)
 {
     checkNextToken(Token_T::COMMA, true);
 
@@ -886,9 +920,28 @@ void ParamsTail()
     }
 
     std::vector<Token_T> types_to_check = {Token_T::IDENTIFIER, Token_T::NUMBER};
-
     checkNextToken(types_to_check, false);
-    ParamsTail();
+
+    if (token.m_token == Token_T::NUMBER)
+    {
+        params.push_back(TacWriter::printVar(token));
+    }
+    else
+    {
+        TableRecord * tr = st.LookupAtCurrentDepth(token.m_lexeme);
+
+        if (tr == nullptr)
+        {
+            std::cout << "ERROR - PARSING - LINE " << line_no << ": Param '" << token.m_lexeme << "' not previously declared" << std::endl;
+            exit(101);
+        }
+        else
+        {
+            params.push_back(TacWriter::printVar(token));
+        }
+    }
+
+    ParamsTail(params);
 }
 
 // IOStat -> e

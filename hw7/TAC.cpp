@@ -3,6 +3,9 @@
 
 #include "TAC.h"
 #include "Parser.h"
+#include <sstream>
+
+extern std::ostringstream tac_file;
 
 extern SymbolTable st;
 extern TempMap temp_map;
@@ -277,23 +280,23 @@ void TacWriter::preprocStatement()
         {
             if (global_depth == 2)
             {
-                std::cout << "_t" << stats[i].m_lexeme;
+                tac_file << "_t" << stats[i].m_lexeme;
             }
             else
             {
-                std::cout << "_bp" << std::to_string(curr_scope_offset - (std::stoi(stats[i].m_lexeme) * 2));
+                tac_file << "_bp" << std::to_string(curr_scope_offset - (std::stoi(stats[i].m_lexeme) * 2));
             }
         }
         else
         {
             // DisplayToken(stats[i]);
-            std::cout << TacWriter::printVar(stats[i]);
+            tac_file << TacWriter::printVar(stats[i]);
         }
 
-        std::cout << " ";
+        tac_file << " ";
     }
 
-    std::cout << std::endl;
+    tac_file << std::endl << std::endl;
 
     // for(int i = 0 ; i < stats.size(); i++)
     // {
@@ -303,14 +306,14 @@ void TacWriter::preprocStatement()
     //     }
     //     else
     //     {
-    //         std::cout << stats[i].m_lexeme;
+    //         tac_file << stats[i].m_lexeme;
     //     }
 
-    //     std::cout << " ";
+    //     tac_file << " ";
 
     //     if (i == stats.size() - 1)
     //     {
-    //         std::cout << std::endl;
+    //         tac_file << std::endl;
     //     }
     // }
 
