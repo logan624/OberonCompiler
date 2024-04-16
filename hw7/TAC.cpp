@@ -7,6 +7,113 @@
 extern SymbolTable st;
 extern TempMap temp_map;
 extern std::string curr_procedure;
+extern int curr_scope_offset;
+
+std::string TacWriter::printVar(Token t)
+{
+    bool is_param = false;
+    int param_offset = -1;
+    bool is_ref = false;
+    // Load in the params for the current procedure
+    TableRecord * tr = st.Lookup(curr_procedure);
+
+    if (tr != nullptr)
+    {
+        ParameterInfo * node = tr->item.procedure.param_info;
+
+        while (node != nullptr)
+        {
+            if (node->m_token.m_lexeme == t.m_lexeme)
+            {
+                param_offset = node->m_offset;
+                if (node->m_mode == Param_Mode::REF)
+                {
+                    is_ref = true;
+                }
+
+                break;
+            }
+
+            node = node->next_node;
+        }
+        // ParameterInfo * node = tr->item.procedure.param_info.m_offset;
+
+    }
+    else
+    {
+        is_param = false;
+    }
+    
+    
+    std::string ret = "";
+
+    if (t.m_token == Token_T::TEMP)
+    {
+        if (global_depth == 2)
+        {
+            ret = "_t" + t.m_lexeme;
+        }
+        else
+        {
+            int offset = curr_scope_offset - (2 * std::stoi(t.m_lexeme));
+            ret = "_bp" + std::to_string(offset);
+        }
+    }
+    else if (t.m_token == Token_T::IDENTIFIER)
+    {
+        if (global_depth == 2)
+        {
+            ret = t.m_lexeme;
+        }
+        else
+        {
+            // If it is a normal variabble
+            if (!is_param)
+            {
+                if (st.LookupAtCurrentDepth(t.m_lexeme) == nullptr)
+                {
+                    tr = st.Lookup(t.m_lexeme);
+                }
+                else
+                {
+                    tr = st.LookupAtCurrentDepth(t.m_lexeme);
+                }
+
+                int offset = tr->item.variable.m_offset;
+
+                ret += "bp" + std::to_string(offset); 
+            }
+            // If it is a parameter
+            else
+            {
+                if (is_ref)
+                {
+                    ret += "@";
+                }
+
+                ret += "bp+" + std::to_string(param_offset);
+            }
+        }
+    }
+    else if (t.m_token == Token_T::NUMBER)
+    {
+        if (t.m_is_int)
+        {
+            ret = std::to_string(t.m_value);
+        }
+        else
+        {
+            ret = std::to_string(t.m_valuer);
+        }
+    }
+    else
+    {
+        // Operations
+        ret = t.m_lexeme;
+    }
+
+    return ret;
+}
 
 void TacWriter::writeFile()
 {
@@ -58,6 +165,8 @@ void TacWriter::addLocalVars(std::vector<std::string> vars, int depth)
         std::pair<Token, int> ele(var_token, current_offset);
         offset_map[depth - 1].second.push_back(ele);
     }
+
+    curr_scope_offset = current_offset;
 
     return;
 }
@@ -153,11 +262,19 @@ void TacWriter::preprocStatement()
     {
         if (stats[i].m_token == Token_T::TEMP)
         {
-            std::cout << "_t" << std::stoi(stats[i].m_lexeme);
+            if (global_depth == 2)
+            {
+                std::cout << "_t" << stats[i].m_lexeme << " := ";
+            }
+            else
+            {
+                std::cout << "_bp" << std::to_string(curr_scope_offset - (std::stoi(stats[i].m_lexeme) * 2));
+            }
         }
         else
         {
-            DisplayToken(stats[i]);
+            // DisplayToken(stats[i]);
+            TacWriter::printVar(stats[i]);
         }
 
         std::cout << " ";

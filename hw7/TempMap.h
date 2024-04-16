@@ -1,10 +1,16 @@
 #pragma once
 
+#include <string>
 #include <vector>
 #include <stack>
 
+
+
 #include "TAC.h"
 #include "LexicalAnalyzer.h"
+#include "Parser.h"
+
+extern int curr_scope_offset;
 
 class TempMap
 {
@@ -66,7 +72,15 @@ class TempMap
                 tokenStack->pop();
             }
 
-            std::cout << "_t" << index << " := ";
+            // std::cout << "_t" << index << " := ";
+            if (global_depth == 2)
+            {
+                std::cout << "_t" << index << " := ";
+            }
+            else
+            {
+                std::cout << "_bp" << std::to_string(curr_scope_offset - (index * 2)) << " := ";
+            }
 
             for (int i = 0; i < vec.size(); i++)
             {
@@ -74,12 +88,22 @@ class TempMap
                 {
                     // Key
                     int key = std::stoi(vec[i].m_lexeme);
-                    std::cout << "_t" << std::to_string(key);
+                    // std::cout << "_t" << std::to_string(key);
+
+                    if (global_depth == 2)
+                    {
+                        std::cout << "_t" << std::to_string(key) << " := ";
+                    }
+                    else
+                    {
+                        std::cout << "_bp" << std::to_string(curr_scope_offset - (key * 2));
+                    }
                 }
                 else
                 {
                     // Print the lexeme of the top token.
-                    DisplayToken(vec[i]);  
+                    // DisplayToken(vec[i]);  
+                    TacWriter::printVar(vec[i]);  
                 }
 
                 std::cout << " ";
@@ -97,7 +121,7 @@ class TempMap
             //         // Key
             //         int key = std::stoi(topToken.m_lexeme);
             //         writeTemp(key, true);
-            //         std::cout << "_t" << std::to_string(key) << " " << ":=" << " ";
+            //         std::cout << "_t" << std::to_string(key) << " " << " := " << " ";
             //     }
             //     else
             //     {

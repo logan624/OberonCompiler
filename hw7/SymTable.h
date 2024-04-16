@@ -21,6 +21,7 @@ struct ParameterInfo
     Var_T m_type;
     Token m_token;
     ParameterInfo * next_node;
+    int m_offset;
 };
 
 struct TableRecord {

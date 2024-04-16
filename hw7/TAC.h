@@ -30,11 +30,6 @@ class TacWriter
         
         void addTemp();
 
-        void getHighestOffset()
-        {
-
-        }
-
         void setupOffsetMap()
         {
             for (int i = 0; i < 4; i++)
@@ -43,6 +38,8 @@ class TacWriter
                 offset_map.push_back(std::make_pair(i + 1, vec));
             }
         }
+
+        static std::string printVar(Token t);
 
         // ------------------------------------------
 
