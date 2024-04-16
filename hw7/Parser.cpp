@@ -1062,14 +1062,14 @@ void Factor()
     else if (token.m_token == Token_T::NUMBER)
     {
         // Maybe add stuff here in later assingments?
-        Token temp_flag;
-        temp_flag.m_token = Token_T::TEMP_BEGIN;
-        token_stack.push(temp_flag);
+        // Token temp_flag;
+        // temp_flag.m_token = Token_T::TEMP_BEGIN;
+        // token_stack.push(temp_flag);
 
         token_stack.push(token);
 
-        temp_flag.m_token = Token_T::TEMP_END;
-        token_stack.push(temp_flag);
+        // temp_flag.m_token = Token_T::TEMP_END;
+        // token_stack.push(temp_flag);
 
         return;
     }

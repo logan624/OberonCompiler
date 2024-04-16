@@ -379,6 +379,28 @@ std::vector<Token> TacWriter::reduceMultiOp()
     std::stack<Token> test = token_stack;
     Token last_temp;
 
+    if (initial_state.size() == 1)
+    {
+        std::stack<Token> d;
+        d.push(initial_state.top());
+        initial_state.pop();
+
+        Token temp_token;
+
+        int temp_key = temp_map.insertTemp(d);
+        temp_token.m_lexeme = std::to_string(temp_key);
+        temp_token.m_token = Token_T::TEMP;
+
+        ret.push_back(temp_token);
+
+        while (!token_stack.empty())
+        {
+            token_stack.pop();
+        }
+
+        return ret;
+    }
+
     while(!token_stack.empty())
     {
         Token t = token_stack.top();
