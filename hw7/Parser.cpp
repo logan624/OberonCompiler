@@ -925,6 +925,40 @@ std::vector<std::string> Params()
         ParamsTail(params);
     }
 
+    int param_num = 1;
+
+    for (std::string & param : params)
+    {
+        TableRecord * tr2 = st.Lookup(curr_procedure);
+        Param_Mode mode = Param_Mode::VAL;
+        
+        ParameterInfo * node;
+
+        if (tr2 != nullptr)
+        {
+            node = tr2->item.procedure.param_info;
+            int num = 1;
+
+            while (node != nullptr)
+            {
+                if (param_num == num)
+                {
+                    mode = node->m_mode;
+                }
+
+                node = node->next_node;
+                num++;
+            }
+        }
+
+        if (mode == Param_Mode::REF)
+        {
+            param = "@" + param;
+        }
+
+        param_num++;
+    }
+
     return params;
 }
 
