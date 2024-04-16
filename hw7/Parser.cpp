@@ -20,6 +20,8 @@ TacWriter tac_writer;
 std::ostringstream tac_file;
 std::string main_module_name;
 
+using namespace std;
+
 int typeToSize(Var_T type, Token t)
 {
     switch(type)
@@ -172,7 +174,7 @@ void Prog()
 
     DeclarativePart(p_to_proc);
 
-    tac_file << "proc\t" << module_name.m_lexeme << std::endl << std::endl;
+    cout << /**/ "proc\t" << module_name.m_lexeme << std::endl << std::endl;
     main_module_name = module_name.m_lexeme;
     StatementPart();
 
@@ -200,7 +202,7 @@ void Prog()
 
     checkNextToken(Token_T::EOF_T, false);
 
-    tac_file << "start proc " << module_name.m_lexeme << std::endl << std::endl;
+    cout << /**/ "start proc " << module_name.m_lexeme << std::endl << std::endl;
 }
 
 // DeclarativePart -> ConstPart VarPart ProcPart
@@ -297,6 +299,7 @@ int VarPart()
     
     if (prev_empty)
     {
+        curr_scope_offset = -2;
         return 0;
     }
 
@@ -337,6 +340,7 @@ int VarTail()
     std::vector<std::string> names_for_offsets;
 
     curr_scope_offset = curr_scope_offset - 2;
+    int test = curr_scope_offset;
 
     // Insert the variables as this type into the symbol table
     for (long int i = 0; i < vars_to_insert.size(); i++)
@@ -366,9 +370,11 @@ int VarTail()
         p_rec->item.variable.m_offset = curr_scope_offset;
         p_rec->item.variable.m_size = typeToSize(p_rec->item.variable.m_type, vars_to_insert[i].first);
         
-        curr_scope_offset += p_rec->item.variable.m_size;
+        curr_scope_offset -= p_rec->item.variable.m_size;
         size_of_vars += p_rec->item.variable.m_size;
     }
+
+    test = curr_scope_offset;
 
     // # TODO
     tac_writer.addLocalVars(names_for_offsets, global_depth);
@@ -514,7 +520,7 @@ std::pair<bool, TableRecord *> ProcHeading()
     checkNextToken(Token_T::IDENTIFIER, false);
     curr_procedure = token.m_lexeme;
 
-    tac_file << "proc\t" << curr_procedure << std::endl << std::endl;
+    cout << /**/ "proc\t" << curr_procedure << std::endl << std::endl;
 
     // Insert the Procedure - FIX IF NEEDED
     TableRecord * p_to_proc;
@@ -559,9 +565,7 @@ std::pair<bool, TableRecord *> ProcHeading()
 
     // Increment the global depth, and insert the parameters
     global_depth++;
-
-
-    curr_scope_offset = 0;
+    curr_scope_offset = -2;
     
     for (int i = 0; i < params_to_insert.size(); i++)
     {
@@ -723,11 +727,11 @@ void StatementPart()
 
         if (global_depth == 2 || global_depth == 1)
         {
-            tac_file << "endp proc " << curr_procedure << std::endl;
+            cout << /**/ "endp proc " << curr_procedure << std::endl;
         }
         else
         {
-            tac_file << "endp\t" << curr_procedure << std::endl;
+            cout << /**/ "endp\t" << curr_procedure << std::endl;
         }
         
     }
@@ -737,7 +741,7 @@ void StatementPart()
     }
 
     temp_map = TempMap();
-    tac_file << std::endl;
+    cout << /**/ std::endl;
 }
 
 // SeqOfStatements -> e
@@ -829,7 +833,7 @@ void AssignStat()
         // std::stack<Token> test_stack = token_stack;
         std::string proc_name = t.m_lexeme;
         ProcCall();
-        tac_file << "call " << proc_name << std::endl << std::endl;
+        cout << /**/ "call " << proc_name << std::endl << std::endl;
 
         while(!token_stack.empty())
         {
@@ -878,7 +882,7 @@ void ProcCall()
 
     for (std::string param : params)
     {
-        tac_file << "push " << param << std::endl;
+        cout << /**/ "push " << param << std::endl;
     }
 
     checkNextToken(Token_T::R_SYMBOL, false);

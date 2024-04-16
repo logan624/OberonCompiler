@@ -12,6 +12,8 @@ extern TempMap temp_map;
 extern std::string curr_procedure;
 extern int curr_scope_offset;
 
+using namespace std;
+
 std::string TacWriter::printVar(Token t)
 {
     bool is_param = false;
@@ -290,24 +292,24 @@ void TacWriter::preprocStatement()
         {
             if (global_depth == 2)
             {
-                tac_file << "_t" << stats[i].m_lexeme;
+                cout << /**/ "_t" << stats[i].m_lexeme;
             }
             else
             {
                 int test = curr_scope_offset - ((std::stoi(stats[i].m_lexeme) - 1) * 2);
-                tac_file << "_bp" << std::to_string(curr_scope_offset - ((std::stoi(stats[i].m_lexeme) - 1) * 2));
+                cout << /**/ "_bp" << std::to_string(curr_scope_offset - ((std::stoi(stats[i].m_lexeme) - 1) * 2));
             }
         }
         else
         {
             // DisplayToken(stats[i]);
-            tac_file << TacWriter::printVar(stats[i]);
+            cout << /**/ TacWriter::printVar(stats[i]);
         }
 
-        tac_file << " ";
+        cout << /**/ " ";
     }
 
-    tac_file << std::endl << std::endl;
+    cout << /**/ std::endl << std::endl;
 }
 
 // Returns vector of tokens if it could reduce stuff, otherwise retrns nothing
@@ -382,6 +384,28 @@ std::vector<Token> TacWriter::reduceMultiOp()
 
     while(!token_stack.empty())
     {
+        // if (token_stack.size() == 0)
+        // {
+        //     std::stack<Token> temp_s;
+        //     temp_s.push(second_identifier);
+        //     temp_s.push(operation);
+        //     temp_s.push(first_identifier);
+            
+        //     int temp_key = temp_map.insertTemp(temp_s);
+        //     last_temp.m_lexeme = std::to_string(temp_key);
+        //     last_temp.m_token = Token_T::TEMP;
+
+        //     ret.push_back(last_temp);
+
+        //     while(!token_stack.empty())
+        //     {
+        //         token_stack.pop();
+        //     }
+
+        //     return ret;
+        // }
+
+
         Token t = token_stack.top();
         token_stack.pop();
 
@@ -418,7 +442,7 @@ std::vector<Token> TacWriter::reduceMultiOp()
                     last_temp.m_lexeme = std::to_string(temp_key);
                     last_temp.m_token = Token_T::TEMP;
 
-                    ret.push_back(last_temp);
+                    // ret.push_back(last_temp);
 
                     first_identifier.m_token = Token_T::UNKNOWN;
                     second_identifier.m_token = Token_T::UNKNOWN;
@@ -427,14 +451,27 @@ std::vector<Token> TacWriter::reduceMultiOp()
             }
             else
             {
-                if (insert_next == true)
-                {
-                    insert_next = false;
-                    ret.push_back(last_temp);
-                }
+                std::stack<Token> s;
 
-                ret.push_back(operation);
-                ret.push_back(t);
+                Token temp_token;
+                temp_token.m_token = Token_T::TEMP;
+
+                s.push(t);
+                s.push(operation);
+                s.push(last_temp);
+
+                temp_token.m_lexeme = std::to_string(temp_map.insertTemp(s));
+
+                // if (insert_next == true)
+                // {
+                //     insert_next = false;
+                //     ret.push_back(last_temp);
+                // }
+
+                // ret.push_back(operation);
+                // ret.push_back(t);
+
+                ret.push_back(temp_token);
             }
 
             additional_op = false;
@@ -543,28 +580,6 @@ std::vector<Token> TacWriter::reduceMultiOp()
                     if (token_stack.size() == 2)
                     {
                         insert_next = true;
-                    }
-
-
-                    if (token_stack.size() == 0)
-                    {
-                        std::stack<Token> temp_s;
-                        temp_s.push(second_identifier);
-                        temp_s.push(operation);
-                        temp_s.push(first_identifier);
-                        
-                        int temp_key = temp_map.insertTemp(temp_s);
-                        last_temp.m_lexeme = std::to_string(temp_key);
-                        last_temp.m_token = Token_T::TEMP;
-
-                        ret.push_back(last_temp);
-
-                        while(!token_stack.empty())
-                        {
-                            token_stack.pop();
-                        }
-
-                        return ret;
                     }
                 }
             }
@@ -696,9 +711,10 @@ std::vector<Token> TacWriter::reduceTempMultiOp(std::stack<Token> p_stack)
             }
             else
             {
-                ret.push_back(t);
-
                 ret.push_back(operation);
+                ret.push_back(t);  
+                
+                std::reverse(ret.begin(), ret.end()); 
 
                 if (insert_next == true)
                 {
@@ -816,27 +832,6 @@ std::vector<Token> TacWriter::reduceTempMultiOp(std::stack<Token> p_stack)
                     if (p_stack.size() == 2)
                     {
                         insert_next = true;
-                    }
-
-                    if (p_stack.size() == 0)
-                    {
-                        std::stack<Token> temp_s;
-                        temp_s.push(second_identifier);
-                        temp_s.push(operation);
-                        temp_s.push(first_identifier);
-                        
-                        int temp_key = temp_map.insertTemp(temp_s);
-                        last_temp.m_lexeme = std::to_string(temp_key);
-                        last_temp.m_token = Token_T::TEMP;
-
-                        ret.push_back(last_temp);
-
-                        while(!token_stack.empty())
-                        {
-                            token_stack.pop();
-                        }
-
-                        return ret;
                     }
                 }
             }
