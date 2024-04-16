@@ -6,7 +6,8 @@ a = _t1
 _t2 = 10 
 b = _t2 
 
-c = a + b 
+_t3 = a + b 
+c = _t3 
 
 endp	one
 

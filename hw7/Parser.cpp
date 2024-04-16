@@ -721,7 +721,15 @@ void StatementPart()
             curr_procedure = main_module_name;
         }
 
-        tac_file << "endp\t" << curr_procedure << std::endl;
+        if (global_depth == 2 || global_depth == 1)
+        {
+            tac_file << "endp proc " << curr_procedure << std::endl;
+        }
+        else
+        {
+            tac_file << "endp\t" << curr_procedure << std::endl;
+        }
+        
     }
     else
     {
