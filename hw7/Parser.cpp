@@ -18,6 +18,7 @@ std::stack<Token> token_stack;
 TempMap temp_map;
 TacWriter tac_writer;
 std::ostringstream tac_file;
+std::string main_module_name;
 
 int typeToSize(Var_T type, Token t)
 {
@@ -171,7 +172,8 @@ void Prog()
 
     DeclarativePart(p_to_proc);
 
-    tac_file << "Proc\t" << module_name.m_lexeme << std::endl << std::endl;
+    tac_file << "proc\t" << module_name.m_lexeme << std::endl << std::endl;
+    main_module_name = module_name.m_lexeme;
     StatementPart();
 
     checkNextToken(Token_T::END, false);
@@ -198,7 +200,7 @@ void Prog()
 
     checkNextToken(Token_T::EOF_T, false);
 
-    tac_file << "Start proc " << module_name.m_lexeme << std::endl << std::endl;
+    tac_file << "start proc " << module_name.m_lexeme << std::endl << std::endl;
 }
 
 // DeclarativePart -> ConstPart VarPart ProcPart
@@ -512,7 +514,7 @@ std::pair<bool, TableRecord *> ProcHeading()
     checkNextToken(Token_T::IDENTIFIER, false);
     curr_procedure = token.m_lexeme;
 
-    tac_file << "Proc\t" << curr_procedure << std::endl << std::endl;
+    tac_file << "proc\t" << curr_procedure << std::endl << std::endl;
 
     // Insert the Procedure - FIX IF NEEDED
     TableRecord * p_to_proc;
@@ -714,7 +716,12 @@ void StatementPart()
 
     if (global_depth > 1)
     {
-        tac_file << "Endp\t" << curr_procedure << std::endl;
+        if (global_depth == 2)
+        {
+            curr_procedure = main_module_name;
+        }
+
+        tac_file << "endp\t" << curr_procedure << std::endl;
     }
     else
     {
@@ -814,7 +821,7 @@ void AssignStat()
         // std::stack<Token> test_stack = token_stack;
         std::string proc_name = t.m_lexeme;
         ProcCall();
-        tac_file << "Call " << proc_name << std::endl << std::endl;
+        tac_file << "call " << proc_name << std::endl << std::endl;
 
         while(!token_stack.empty())
         {
@@ -1060,7 +1067,7 @@ void Factor()
         token_stack.push(temp_flag);
 
         token_stack.push(token);
-        
+
         temp_flag.m_token = Token_T::TEMP_END;
         token_stack.push(temp_flag);
 

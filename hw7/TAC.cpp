@@ -110,6 +110,10 @@ std::string TacWriter::printVar(Token t)
             ret = std::to_string(t.m_valuer);
         }
     }
+    else if (t.m_token == Token_T::ASSOP)
+    {
+        ret = "=";
+    }
     else
     {
         // Operations

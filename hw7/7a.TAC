@@ -1,14 +1,14 @@
-Proc	one
+proc	one
 
-_t1 := 5 
-a := _t1 
+_t1 = 5 
+a = _t1 
 
-_t2 := 10 
-b := _t2 
+_t2 = 10 
+b = _t2 
 
-c := a + b 
+c = a + b 
 
-Endp	
+endp	one
 
-Start proc one
+start proc one
 

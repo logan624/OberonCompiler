@@ -63,11 +63,11 @@ void TempMap::writeTemp(int index, bool recursive)
     // tac_file << "_t" << index << " := ";
     if (global_depth == 2)
     {
-        tac_file << "_t" << index << " := ";
+        tac_file << "_t" << index << " = ";
     }
     else
     {
-        tac_file << "_bp" << std::to_string(curr_scope_offset - ((index - 1) * 2)) << " := ";
+        tac_file << "_bp" << std::to_string(curr_scope_offset - ((index - 1) * 2)) << " = ";
     }
 
     for (int i = 0; i < vec.size(); i++)
@@ -80,7 +80,7 @@ void TempMap::writeTemp(int index, bool recursive)
 
             if (global_depth == 2)
             {
-                tac_file << "_t" << std::to_string(key) << " := ";
+                tac_file << "_t" << std::to_string(key) << " = ";
             }
             else
             {

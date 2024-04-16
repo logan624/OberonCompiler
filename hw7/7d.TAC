@@ -1,22 +1,25 @@
-Proc	test1
+proc	test1
 
-_bp6 := _bp+6 * _bp+4 
-@_bp+8 := _bp6 + 30 
+_bp4 = _bp+6 * _bp+4 
+_bp6 = 30 
+@_bp+8 = _bp4 + _bp6 
 
-Endp	test1
+endp	test1
 
-Proc	main
+proc	main
 
-a := 10 
+_t1 = 10 
+a = _t1 
 
-b := 20 
+_t2 = 20 
+b = _t2 
 
 push a
 push b
 push c
-Call test1
+call test1
 
-Endp	test1
+endp	main
 
-Start proc main
+start proc main
 
