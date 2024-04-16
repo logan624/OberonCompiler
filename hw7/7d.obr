@@ -1,0 +1,11 @@
+MODULE main;
+VAR a,b,c:INTEGER;
+    PROCEDURE test1(d:INTEGER; e:INTEGER; VAR f:INTEGER);(*maybe the semicolon should not be here*)
+    BEGIN
+        f = e * d + 30;
+    END test1;
+BEGIN
+    a:=10;
+    b:=20;
+    test1(a,b,c);
+END main.
