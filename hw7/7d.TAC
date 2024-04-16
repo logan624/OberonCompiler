@@ -16,7 +16,7 @@ b = _t2
 
 push a
 push b
-push c
+push @c
 call test1
 
 endp	main

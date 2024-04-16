@@ -19,6 +19,7 @@ TempMap temp_map;
 TacWriter tac_writer;
 std::ostringstream tac_file;
 std::string main_module_name;
+std::string proc_name;
 
 using namespace std;
 
@@ -844,6 +845,7 @@ void AssignStat()
     {
         // std::stack<Token> test_stack = token_stack;
         std::string proc_name = t.m_lexeme;
+        ::proc_name = proc_name;
         ProcCall();
         tac_file << "call " << proc_name << std::endl << std::endl;
 
@@ -941,7 +943,7 @@ std::vector<std::string> Params()
 
     for (std::string & param : params)
     {
-        TableRecord * tr2 = st.Lookup(curr_procedure);
+        TableRecord * tr2 = st.Lookup(proc_name);
         Param_Mode mode = Param_Mode::VAL;
         
         ParameterInfo * node;
