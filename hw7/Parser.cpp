@@ -176,6 +176,9 @@ void Prog()
 
     tac_file << "proc\t" << module_name.m_lexeme << std::endl << std::endl;
     main_module_name = module_name.m_lexeme;
+
+    curr_procedure = module_name.m_lexeme;
+
     StatementPart();
 
     checkNextToken(Token_T::END, false);
@@ -713,6 +716,15 @@ void StatementPart()
 
     if (prev_empty)
     {
+        if (global_depth == 2 || global_depth == 1)
+        {
+            tac_file << "endp\t" << curr_procedure << std::endl;
+        }
+        else
+        {
+            tac_file << "endp\t" << curr_procedure << std::endl;
+        }
+
         return;
     }
 
@@ -727,7 +739,7 @@ void StatementPart()
 
         if (global_depth == 2 || global_depth == 1)
         {
-            tac_file << "endp proc " << curr_procedure << std::endl;
+            tac_file << "endp\t" << curr_procedure << std::endl;
         }
         else
         {

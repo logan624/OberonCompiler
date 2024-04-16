@@ -577,6 +577,23 @@ std::vector<Token> TacWriter::reduceMultiOp()
                 {
                     first_op_second = true;
 
+                    if (token_stack.empty())
+                    {
+                        Token tk;
+                        std::stack<Token> tk_s;
+                        tk.m_token = Token_T::TEMP;
+                        
+                        tk_s.push(second_identifier);
+                        tk_s.push(operation);
+                        tk_s.push(first_identifier);
+
+                        tk.m_lexeme = std::to_string(temp_map.insertTemp(tk_s));                    
+
+                        ret.push_back(tk);
+
+                        return ret;
+                    }
+
                     if (token_stack.size() == 2)
                     {
                         insert_next = true;
@@ -586,7 +603,7 @@ std::vector<Token> TacWriter::reduceMultiOp()
         }
     }
 
-    if (initial_state.size() < 5)
+    if (initial_state.size() < 3)
     {
         while(initial_state.empty() == false)
         {
