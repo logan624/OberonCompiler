@@ -945,6 +945,8 @@ std::vector<std::string> Params()
     {
         TableRecord * tr2 = st.Lookup(proc_name);
         Param_Mode mode = Param_Mode::VAL;
+
+        int num_params = 1;
         
         ParameterInfo * node;
 
@@ -963,6 +965,18 @@ std::vector<std::string> Params()
                 node = node->next_node;
                 num++;
             }
+
+            // num_params++;
+            num_params = tr2->item.procedure.num_params;
+        }
+
+        // std::cout << "NUM_PARAMS" << num_params << std::endl;
+        // std::cout << "VECTOR SIZE" << params.size() << std::endl;
+
+        if (num_params != params.size())
+        {
+            std::cout << "ERROR - PARSING - LINE " << line_no << ": Wrong number of arguments to procedure '" << proc_name << "'" << std::endl;
+            exit(105);
         }
 
         if (mode == Param_Mode::REF)
