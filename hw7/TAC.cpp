@@ -69,7 +69,22 @@ std::string TacWriter::printVar(Token t)
     {
         if (global_depth == 2)
         {
-            ret = t.m_lexeme;
+            if (st.LookupAtCurrentDepth(t.m_lexeme) == nullptr)
+            {
+                tr = st.Lookup(t.m_lexeme);
+                if (tr != nullptr)
+                {
+                    return t.m_lexeme;
+                }
+            }
+            else
+            {
+                tr = st.LookupAtCurrentDepth(t.m_lexeme);
+            }
+
+            int offset = tr->item.variable.m_offset;
+
+            ret += "_bp" + std::to_string(offset); 
         }
         else
         {
@@ -79,6 +94,10 @@ std::string TacWriter::printVar(Token t)
                 if (st.LookupAtCurrentDepth(t.m_lexeme) == nullptr)
                 {
                     tr = st.Lookup(t.m_lexeme);
+                    if (tr != nullptr)
+                    {
+                        return t.m_lexeme;
+                    }
                 }
                 else
                 {

@@ -4,7 +4,7 @@ MODULE one;
     BEGIN
         a:=5;
         b:=10;
-        c:=a+b;
+        c:=a MOD b;
     END two;
 BEGIN
 

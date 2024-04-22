@@ -84,7 +84,7 @@ void TempMap::writeTemp(int index, bool recursive)
 
             if (global_depth == 2)
             {
-                tac_file << "_t" << std::to_string(key) << " = ";
+                tac_file << "_t" << std::to_string(key);
             }
             else
             {

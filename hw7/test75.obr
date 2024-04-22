@@ -1,0 +1,15 @@
+MODULE five;
+VAR  a,b,c,d:INTEGER;
+ PROCEDURE fun(a:INTEGER; b:INTEGER);
+ VAR c:INTEGER;
+ BEGIN 
+  c:=a*b;
+ END fun;
+BEGIN
+  a:=5;
+  b:= 10;
+  d:= 20;
+  c:= d + a * b;
+
+  fun(a,b);
+END five.

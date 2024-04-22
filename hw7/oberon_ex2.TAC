@@ -1,15 +1,20 @@
-Proc	Proc1
+proc	six
 
-_bp-8 := _bp--2 + 5 
-_bp-10 := _bp-8 - 7 
-_bp-12 := _bp-10 - 6 
-_bp-14 := _bp-12 + 7 
-_bp-0 := _bp-14 
+_t1 = 5 
+a = _t1 
 
-Endp	Proc1
+_t2 = 10 
+b = _t2 
 
-Proc	Main
+_t3 = 20 
+d = _t3 
 
-Endp	Proc1
+_t4 = d + e 
+_t5 = b + a 
+_t6 = _t4 * _t5 
+c = _t6 
 
-Start proc Main
+endp	six
+
+start proc six
+
