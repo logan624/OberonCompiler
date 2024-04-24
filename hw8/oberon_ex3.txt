@@ -1,0 +1,12 @@
+MODULE Main;
+VAR a:INTEGER;
+    b,c:REAL;
+    d,e,f:INTEGER;
+    g,h:REAL;
+PROCEDURE Proc1;
+VAR a:INTEGER ;
+    b,c:REAL;
+BEGIN
+END Proc1;
+BEGIN
+END Main.

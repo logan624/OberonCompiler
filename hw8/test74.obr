@@ -1,0 +1,13 @@
+MODULE four;
+VAR a,b:INTEGER;
+ PROCEDURE one;
+ VAR c,d:INTEGER;
+ BEGIN 
+   a:= 5;
+   b:= 10;
+   d:= 20;
+   c:= d + a * b;
+ END one;
+BEGIN
+  one();
+END four.

@@ -1,0 +1,25 @@
+MODULE one;
+VAR id : INTEGER;
+
+PROCEDURE two;
+CONST a=5; b=7.5;
+BEGIN
+
+END two;
+
+PROCEDURE three (id : INTEGER) ;
+VAR id2, id3, id4 : INTEGER ;
+id5, id6 : REAL ;
+BEGIN
+
+END three;
+
+PROCEDURE four (id : INTEGER ; VAR id2 : INTEGER) ;
+VAR id3 : INTEGER;
+BEGIN
+
+END four;
+
+BEGIN
+
+END one.

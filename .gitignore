@@ -1,0 +1,7 @@
+build
+.vscode
+lexical_analyzer
+parser
+semantic
+sym_table
+hw7
