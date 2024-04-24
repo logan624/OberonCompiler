@@ -1,5 +1,5 @@
-Gregg8: main.o LexicalAnalyzer.o Parser.o SymTable.o TAC.o TempMap.o LiteralTable.o
-	g++ -std=c++11 -o Gregg8 main.o LexicalAnalyzer.o Parser.o SymTable.o TAC.o TempMap.o LiteralTable.o
+Gregg8: main.o LexicalAnalyzer.o Parser.o SymTable.o TAC.o TempMap.o LiteralTable.o Asm.o
+	g++ -std=c++11 -o Gregg8 main.o LexicalAnalyzer.o Parser.o SymTable.o TAC.o TempMap.o LiteralTable.o Asm.o
 
 main.o: main.cpp
 	g++ -std=c++11 -c main.cpp
@@ -22,5 +22,8 @@ TempMap.o: TempMap.cpp TempMap.h
 LiteralTable.o: LiteralTable.cpp LiteralTable.h
 	g++ -std=c++11 -c LiteralTable.cpp
 
+Asm.o: Asm.cpp Asm.h
+	g++ -std=c++11 -c Asm.cpp
+
 clean:
-	rm Gregg8 main.o LexicalAnalyzer.o Parser.o SymTable.o TAC.o TempMap.o LiteralTable.o
+	rm Gregg8 main.o LexicalAnalyzer.o Parser.o SymTable.o TAC.o TempMap.o LiteralTable.o Asm.o

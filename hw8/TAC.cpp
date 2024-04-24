@@ -11,6 +11,7 @@ extern SymbolTable st;
 extern TempMap temp_map;
 extern std::string curr_procedure;
 extern int curr_scope_offset;
+extern std::ostringstream asm_file;
 
 using namespace std;
 

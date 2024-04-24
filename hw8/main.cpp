@@ -23,9 +23,12 @@
 
 #include "LexicalAnalyzer.h"
 #include "Parser.h"
+#include "Asm.h"
 
 extern SymbolTable st;
 extern std::ostringstream tac_file;
+extern std::ostringstream asm_file;
+extern Asm asm_writer;
 
 int main(int argc, char* argv[])
 {
@@ -60,6 +63,8 @@ int main(int argc, char* argv[])
 
     st = SymbolTable();
 
+    // Open file stream for the TAC file
+    // ---------------------------------
     std::string tac_filename = prog_file;
 
     if (tac_filename.size() >= 3) {
@@ -68,19 +73,36 @@ int main(int argc, char* argv[])
     }
     // Append "TAC" to the end of the file name
     tac_filename += "TAC";
-
-    // Open file stream for the TAC file
     std::ofstream tac_stream(tac_filename);
-
     if (!tac_stream.is_open()) 
     {
         std::cerr << "Failed to open " << tac_filename << std::endl;
         exit(105);
     }
 
+    asm_writer = Asm(tac_filename);
+
+    // OPEN SS FOR THE ASM FILE
+    // ------------------------
+    std::string asm_filename = prog_file;
+    if (asm_filename.size() >= 3) {
+        // Remove the last three characters
+        asm_filename.erase(asm_filename.end() - 3, asm_filename.end());
+    }
+    // Append "asm" to the end of the file name
+    asm_filename += "asm";
+    std::ofstream asm_stream(asm_filename);
+    if (!asm_stream.is_open()) 
+    {
+        std::cerr << "Failed to open " << asm_filename << std::endl;
+        exit(105);
+    }
+
+    // Begin parsing
     Prog();
 
-    // std::cout << tac_file.str();
+    // Write TAC/ASM contents to appropriate file
+    // ------------------------------------------
     tac_stream << tac_file.str();
 
     if (tac_stream.fail()) {
@@ -89,6 +111,16 @@ int main(int argc, char* argv[])
 
     // Close the file stream
     tac_stream.close();
+
+    asm_writer.readTACFile();
+
+    asm_stream << asm_file.str();
+
+    if (asm_stream.fail()) {
+        std::cerr << "Error occurred while writing to the file " << asm_filename << std::endl;
+    }
+
+    // -----------------------------------------
 
     std::cout << "Program parsed successfully!" << std::endl;
 

@@ -98,6 +98,7 @@ class SymbolTable
         void DeleteDepth(int depth);
         // WriteTable(depth) - include a procedure that will write out all variables (lexeme only) that are in the table at a specified depth. [ this will be useful for debugging your compiler ]
         void WriteTable(int depth);
+        std::vector<std::string> GetVariablesAtCurrentDepth();
         
     private:
         // hash(lexeme) - (private)passed a lexeme and return the location for that lexeme. (this should be an internal routine only, do not list in the interface section). 

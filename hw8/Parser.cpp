@@ -5,8 +5,9 @@
 #include "TempMap.h"
 #include "TAC.h"
 #include "LiteralTable.h"
-#include <sstream>
+#include "Asm.h"
 
+#include <sstream>
 #include <stack>
 #include <vector>
 
@@ -22,6 +23,8 @@ LiteralTable lt;
 std::ostringstream tac_file;
 std::string main_module_name;
 std::string proc_name;
+std::ostringstream asm_file;
+Asm asm_writer;
 
 using namespace std;
 
@@ -183,6 +186,7 @@ void Prog()
     main_module_name = module_name.m_lexeme;
 
     curr_procedure = module_name.m_lexeme;
+    asm_writer.setModuleName(module_name.m_lexeme);
 
     StatementPart();
 
@@ -198,15 +202,30 @@ void Prog()
 
     checkNextToken(Token_T::PERIOD, false);
 
+    std::vector<std::string> var_names;
+
+    // Update the proc information for the ASM file
+    asm_writer.addProc(module_name.m_lexeme);
+    Procedure * asm_proc = asm_writer.getProc(module_name.m_lexeme);
+    asm_proc->size_of_locals = p_to_proc->item.procedure.local_vars_size;
+
     while (global_depth >= 1)
     {
+        if (global_depth == 2)
+        {
+            var_names = st.GetVariablesAtCurrentDepth();
+        }
+
+        lt.addLiterals(var_names);
+
         // st.WriteTable(global_depth);
         st.DeleteDepth(global_depth);
-
         // std::cout << "Deleted Depth " << global_depth << std::endl; 
-
         global_depth--;
     }
+
+    Asm::writeHeader();
+    Asm::writeData(var_names);
 
     checkNextToken(Token_T::EOF_T, false);
 
@@ -217,7 +236,14 @@ void Prog()
 void DeclarativePart(TableRecord * p_to_proc)
 {
     ConstPart();
+    std::string tname = curr_procedure;
     int local_vars_size = VarPart();
+
+    if (curr_procedure != "")
+    {
+        Procedure * p = asm_writer.getProc(curr_procedure);
+        p->size_of_locals = local_vars_size;
+    }
 
     p_to_proc->item.procedure.local_vars_size = local_vars_size;
 
@@ -534,15 +560,20 @@ std::pair<bool, TableRecord *> ProcHeading()
     TableRecord * p_to_proc;
     // st.Insert(token.m_lexeme, token, global_depth);
     if (st.LookupAtCurrentDepth(token.m_lexeme) == nullptr)
-        {
-            st.Insert(token.m_lexeme, token, global_depth);
-        }
-        else
-        {
-            std::cout << "ERROR - MULTIPLE DECLARATION: '" << token.m_lexeme << "' already at depth " << global_depth << std::endl;
-            exit(109);
-        }
+    {
+        st.Insert(token.m_lexeme, token, global_depth);
+    }
+    else
+    {
+        std::cout << "ERROR - MULTIPLE DECLARATION: '" << token.m_lexeme << "' already at depth " << global_depth << std::endl;
+        exit(109);
+    }
+
     p_to_proc = st.LookupAtCurrentDepth(token.m_lexeme);
+    
+    // Add the name of this new  procedure to the asm_writer
+    asm_writer.addProc(token.m_lexeme);
+
 
     std::vector<ParameterInfo> params_to_insert = Args();
 
@@ -569,6 +600,15 @@ std::pair<bool, TableRecord *> ProcHeading()
         }
 
         prev = node;
+    }
+
+    // * 2 because of the size of integers (no floats for ASM testing) 
+    int size_of_params = params_to_insert.size() * 2;
+
+    if (curr_procedure != "")
+    {
+        Procedure * p = asm_writer.getProc(curr_procedure);
+        p->size_of_params = size_of_params;
     }
 
     // Increment the global depth, and insert the parameters
@@ -870,7 +910,7 @@ bool Statement()
             }
             else if (curr_token.m_token == Token_T::WRITELN)
             {
-                tac_file << "wrln" << std::endl;
+                tac_file << "wrln" << std::endl << std::endl;
             }
 
             prev_token = curr_token;
@@ -1210,7 +1250,7 @@ void WriteToken()
 
     if (token.m_token == Token_T::LITERAL)
     {
-        std::string lname = lt.insertLiteral(token.m_lexeme);
+        std::string lname = lt.insertLiteral(token.m_literal);
 
         Token new_literal_for_stack;
         new_literal_for_stack.m_lexeme = lname;
