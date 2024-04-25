@@ -3,11 +3,12 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <sstream>
 
 struct Procedure
 {
     std::string name;
-    std::stringstream body;
+    std::string body = "";
     int size_of_locals;
     int size_of_params;
 };
@@ -28,6 +29,8 @@ class Asm
         void four(std::vector<std::string>);
         void five(std::vector<std::string>);
         Procedure * getProc(std::string name);
+        void printProc(std::string pname);
+        void writeCode();
 
     private:
         std::vector<Procedure> procs;

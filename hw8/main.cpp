@@ -113,6 +113,7 @@ int main(int argc, char* argv[])
     tac_stream.close();
 
     asm_writer.readTACFile();
+    asm_writer.writeCode();
 
     asm_stream << asm_file.str();
 

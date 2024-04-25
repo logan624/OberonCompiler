@@ -149,7 +149,7 @@ void Asm::writeData(std::vector<std::string> v)
     }
 
     asm_file << ".CODE" << std::endl;
-    asm_file << "include io.asm" << std::endl;
+    asm_file << "include io.asm" << std::endl << std::endl;
 }
 
 void Asm::addProc(std::string name)
@@ -175,44 +175,126 @@ Procedure * Asm::getProc(std::string name)
     return ret;
 }
 
-void Asm::one(std::vector<std::string>)
+void Asm::one(std::vector<std::string> v)
 {
 
 }
 
-void Asm::two(std::vector<std::string>)
+void Asm::two(std::vector<std::string> v)
 {
+    Procedure * p = nullptr;
+
+    if (proc_name != "")
+    {
+        p = this->getProc(proc_name);
+    }
+    else
+    {
+        p = this->getProc(module_name);
+    }
+
     // Cases
     //      proc name
     //          procname PROC
     //          push bp
-    //          mov bp,sp
-    //          sub sp, SIZE OF LOCALS
+    //          mov bp , sp
+    //          sub sp , SIZE OF LOCALS
+    if (v[0] == "proc")
+    {
+        if (v[1] != module_name)
+        {
+            proc_name = v[1];
+            p = this->getProc(proc_name);
+
+            p->body = p->body + v[1] + "    PROC" + "\n";
+            p->body = p->body + "push bp" + "\n";
+            p->body = p->body + "mov bp , sp" + "\n";
+            p->body = p->body + "sub sp , " + std::to_string(p->size_of_locals) + "\n";   
+        }
+        else
+        {
+            proc_name = "";
+            p = this->getProc(module_name);
+            p->body = p->body + v[1] + "    PROC" + "\n";
+            p->body = p->body + "push bp" + "\n";
+            p->body = p->body + "mov bp , sp" + "\n";
+            p->body = p->body + "sub sp , " + std::to_string(p->size_of_locals) + "\n\n"; 
+        }
+    }
     //      endp name
-    //          add sp, SIZE OF LOCALS
+    //          add sp , SIZE OF LOCALS
     //          pop bp
     //          ret SIZE OF PARAMS
     //          procname endp
+    else if (v[0] == "endp")
+    {
+        if (proc_name != "")
+        {
+            p->body = p->body + "\nadd sp , " + std::to_string(p->size_of_locals) + "\n";
+            p->body = p->body + "pop bp" + "\n";
+            p->body = p->body + "ret " + std::to_string(p->size_of_params) + "\n";
+            p->body = p->body + v[1] + "    ENDP" + "\n\n"; 
+            proc_name = "";    
+        }
+        else
+        {
+            p->body = p->body + "\nadd sp , " + std::to_string(p->size_of_locals) + "\n";
+            p->body = p->body + "pop bp" + "\n";
+            p->body = p->body + "ret " + std::to_string(p->size_of_params) + "\n";
+            p->body = p->body + v[1] + "    ENDP" + "\n\n"; 
+        }
+    }
     //      push _
+    else if (v[0] == "push")
+    {
+        
+    }
     //      call _
     //          call procname
+    else if (v[0] == "call")
+    {
+        p->body = p->body + "call " + v[1] + "\n";
+    }
 
 }
 
-void Asm::three(std::vector<std::string>)
+void Asm::three(std::vector<std::string> v)
 {
     // Cases
     //      start proc name
     //      _ = _
 }
 
-void Asm::four(std::vector<std::string>)
+void Asm::four(std::vector<std::string> v)
 {
 
 }
 
-void Asm::five(std::vector<std::string>)
+void Asm::five(std::vector<std::string> v)
 {
     // Cases
     //      _ = _ op _
+}
+
+void Asm::printProc(std::string pname)
+{
+    Procedure * pr = this->getProc(pname);
+    asm_file << pr->body;
+}
+
+void Asm::writeCode()
+{
+    asm_file << "main\tPROC\n";
+    asm_file << "mov ax, @data\n\n";
+    asm_file << "call " << module_name << "\n\n";
+    asm_file << "mov ah, 04ch\n";
+    asm_file << "int 21h\n";
+    asm_file << "main\tENDP\n\n";
+
+    for (Procedure proc : procs)
+    {
+            asm_file << proc.body;
+    }
+
+    asm_file << "END\tmain\n" << std::endl;
 }
