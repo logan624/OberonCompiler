@@ -23,4 +23,6 @@ class TempMap
         std::stack<Token> * getTemp(int index);
 
         void writeTemp(int index, bool recursive);
+
+        int getTempCount() { return highest_index; }
 };

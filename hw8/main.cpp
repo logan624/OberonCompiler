@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
     //     prog_file = argv[1];
     // }
 
-    prog_file = "oberon_ex2.txt";
+    prog_file = "oberon.obr";
 
     // Create instance of the lexical analyzer
     LexicalAnalyzer* lex = new LexicalAnalyzer(prog_file);

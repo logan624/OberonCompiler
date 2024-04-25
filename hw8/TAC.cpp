@@ -3,6 +3,7 @@
 
 #include "TAC.h"
 #include "Parser.h"
+#include "Asm.h"
 #include <sstream>
 
 extern std::ostringstream tac_file;

@@ -202,7 +202,7 @@ std::string printVar(std::string v)
     // _bp case
     else
     {
-        v = v.substr(1, v.length() - 1); 
+        v = v.substr(1, v.length() - 1);
         v = "[" + v + "]";
     }
 
@@ -295,6 +295,11 @@ void Asm::two(std::vector<std::string> v)
 
 void Asm::three(std::vector<std::string> v)
 {
+    if (v[0] == "start")
+    {
+        return;
+    }
+
     Procedure * p = nullptr;
 
     if (proc_name != "")
@@ -309,8 +314,17 @@ void Asm::three(std::vector<std::string> v)
     // Cases
     //      start proc name
     //      _ = _
-    p->body = p->body + "\nmov ax , " + printVar(v[2]) + "\n";
-    p->body = p->body + "mov " + printVar(v[0]) + " , ax\n";
+    if (isRef(v[0]))
+    {
+        p->body = p->body + "\nmov AX , " + printVar(v[2]) + "\n";
+        p->body = p->body + "\nmov BX , " + printVar(v[0]) + "\n";
+        p->body = p->body + "mov [BX], AX\n";
+    }
+    else
+    {
+        p->body = p->body + "\nmov AX , " + printVar(v[2]) + "\n";
+        p->body = p->body + "mov " + printVar(v[0]) + " , AX\n";
+    }
 }
 
 void Asm::four(std::vector<std::string> v)
@@ -338,18 +352,44 @@ void Asm::five(std::vector<std::string> v)
         p->body = p->body + "mov AX, " + printVar(v[2]) + "\n";
         p->body = p->body + "mov BX, " + printVar(v[4]) + "\n";
         p->body = p->body + "imul BX\n";
+        if (isRef(v[0]))
+        {
+            p->body = p->body + "mov BX, " + printVar(v[0]) + "\n";
+            p->body = p->body + "mov [BX], AX" + "\n";
+        }
+        else
+        {
+            p->body = p->body + "mov " + printVar(v[0]) + " , AX\n";
+        }
     }
     else if (v[3] == "+")
     {
         p->body = p->body + "mov AX, " + printVar(v[2]) + "\n";
         p->body = p->body + "add AX, " + printVar(v[4]) + "\n";
-        p->body = p->body + "mov " + printVar(v[0]) + " , AX\n";
+        // p->body = p->body + "mov " + printVar(v[0]) + " , AX\n";
+        if (isRef(v[0]))
+        {
+            p->body = p->body + "mov BX, " + printVar(v[0]) + "\n";
+            p->body = p->body + "mov [BX], AX" + "\n";
+        }
+        else
+        {
+            p->body = p->body + "mov " + printVar(v[0]) + " , AX\n";
+        }
     }
     else if (v[3] == "-")
     {
         p->body = p->body + "mov AX, " + printVar(v[2]) + "\n";
         p->body = p->body + "sub AX, " + printVar(v[4]) + "\n";
-        p->body = p->body + "mov " + printVar(v[0]) + " , AX\n";
+        if (isRef(v[0]))
+        {
+            p->body = p->body + "mov BX, " + printVar(v[0]) + "\n";
+            p->body = p->body + "mov [BX], AX" + "\n";
+        }
+        else
+        {
+            p->body = p->body + "mov " + printVar(v[0]) + " , AX\n";
+        }
     }
 }
 
@@ -361,17 +401,17 @@ void Asm::printProc(std::string pname)
 
 void Asm::writeCode()
 {
-    asm_file << "main\tPROC\n";
-    asm_file << "mov ax, @data\n\n";
-    asm_file << "call " << module_name << "\n\n";
-    asm_file << "mov ah, 4c00h\n";
-    asm_file << "int 21h\n";
-    asm_file << "main\tENDP\n\n";
-
     for (Procedure proc : procs)
     {
             asm_file << proc.body;
     }
 
+    asm_file << "main\tPROC\n";
+    asm_file << "mov AX, @data\n";
+    asm_file << "mov DS, AX\n\n";
+    asm_file << "call " << module_name << "\n\n";
+    asm_file << "mov ah, 04ch\n";
+    asm_file << "int 21h\n";
+    asm_file << "main\tENDP\n";
     asm_file << "END\tmain\n" << std::endl;
 }

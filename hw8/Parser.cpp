@@ -1,5 +1,4 @@
 #ifndef PARSER_H
-
 #include "Parser.h"
 #include "LexicalAnalyzer.h"
 #include "TempMap.h"
@@ -184,9 +183,12 @@ void Prog()
 
     tac_file << "proc\t" << module_name.m_lexeme << std::endl << std::endl;
     main_module_name = module_name.m_lexeme;
-
+    std::string t32 = main_module_name;
     curr_procedure = module_name.m_lexeme;
     asm_writer.setModuleName(module_name.m_lexeme);
+
+    // Update the proc information for the ASM file
+    asm_writer.addProc(module_name.m_lexeme);
 
     StatementPart();
 
@@ -206,8 +208,8 @@ void Prog()
 
     // Update the proc information for the ASM file
     asm_writer.addProc(module_name.m_lexeme);
-    Procedure * asm_proc = asm_writer.getProc(module_name.m_lexeme);
-    asm_proc->size_of_locals = p_to_proc->item.procedure.local_vars_size;
+    // Procedure * asm_proc = asm_writer.getProc(module_name.m_lexeme);
+    // asm_proc->size_of_locals = p_to_proc->item.procedure.local_vars_size + (2 * temp_map.getTempCount());
 
     while (global_depth >= 1)
     {
@@ -797,6 +799,25 @@ void StatementPart()
 
     }
 
+    // TempMap * ptr = &temp_map;
+    Procedure * pr = nullptr;
+    if (curr_procedure != "")
+    {
+        pr = asm_writer.getProc(curr_procedure);
+        if (pr != nullptr)
+        {
+            pr->size_of_locals = pr->size_of_locals + (2 * temp_map.getTempCount());
+        }
+    }
+    {
+        std::string t = main_module_name;
+        pr = asm_writer.getProc(main_module_name);
+        if (pr != nullptr)
+        {
+            pr->size_of_locals = pr->size_of_locals + (2 * temp_map.getTempCount());
+        }
+    }
+    
     temp_map = TempMap();
     tac_file << std::endl;
 }
