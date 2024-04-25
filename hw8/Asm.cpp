@@ -300,15 +300,21 @@ void Asm::five(std::vector<std::string> v)
     //      _ = _ op _
     if (v[3] == "*")
     {
-
+        p->body = p->body + "mov AX, " + v[2] + "\n";
+        p->body = p->body + "mov BX, " + v[4] + "\n";
+        p->body = p->body + "imul BX\n";
     }
     else if (v[3] == "+")
     {
-
+        p->body = p->body + "mov AX, " + v[2] + "\n";
+        p->body = p->body + "add AX, " + v[4] + "\n";
+        p->body = p->body + "mov " + v[0] + " , AX\n";
     }
     else if (v[3] == "-")
     {
-
+        p->body = p->body + "mov AX, " + v[2] + "\n";
+        p->body = p->body + "sub AX, " + v[4] + "\n";
+        p->body = p->body + "mov " + v[0] + " , AX\n";
     }
 }
 
