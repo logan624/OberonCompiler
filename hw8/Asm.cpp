@@ -260,9 +260,22 @@ void Asm::two(std::vector<std::string> v)
 
 void Asm::three(std::vector<std::string> v)
 {
+    Procedure * p = nullptr;
+
+    if (proc_name != "")
+    {
+        p = this->getProc(proc_name);
+    }
+    else
+    {
+        p = this->getProc(module_name);
+    }
+    
     // Cases
     //      start proc name
     //      _ = _
+    p->body = p->body + "\nmov ax , " + v[2] + "\n";
+    p->body = p->body + "mov " + v[0] + " , ax\n";
 }
 
 void Asm::four(std::vector<std::string> v)
@@ -272,8 +285,31 @@ void Asm::four(std::vector<std::string> v)
 
 void Asm::five(std::vector<std::string> v)
 {
+    Procedure * p = nullptr;
+
+    if (proc_name != "")
+    {
+        p = this->getProc(proc_name);
+    }
+    else
+    {
+        p = this->getProc(module_name);
+    }
+
     // Cases
     //      _ = _ op _
+    if (v[3] == "*")
+    {
+
+    }
+    else if (v[3] == "+")
+    {
+
+    }
+    else if (v[3] == "-")
+    {
+
+    }
 }
 
 void Asm::printProc(std::string pname)
@@ -287,7 +323,7 @@ void Asm::writeCode()
     asm_file << "main\tPROC\n";
     asm_file << "mov ax, @data\n\n";
     asm_file << "call " << module_name << "\n\n";
-    asm_file << "mov ah, 04ch\n";
+    asm_file << "mov ah, 4c00h\n";
     asm_file << "int 21h\n";
     asm_file << "main\tENDP\n\n";
 
