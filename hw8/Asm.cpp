@@ -175,9 +175,43 @@ Procedure * Asm::getProc(std::string name)
     return ret;
 }
 
+bool isRef(std::string s)
+{
+    if (s[0] == '@')
+    {
+        return true;
+    }
+
+    return false;
+}
+
+std::string printVar(std::string v)
+{
+    bool is_ref = isRef(v);
+
+    if (is_ref)
+    {
+        v = v.substr(1, v.length() - 1); 
+    }
+
+    // Global Var name
+    if (v[0] != '_')
+    {
+
+    }
+    // _bp case
+    else
+    {
+        v = v.substr(1, v.length() - 1); 
+        v = "[" + v + "]";
+    }
+
+    return v;
+}
+
 void Asm::one(std::vector<std::string> v)
 {
-
+    // Case for wrln
 }
 
 void Asm::two(std::vector<std::string> v)
@@ -247,7 +281,8 @@ void Asm::two(std::vector<std::string> v)
     //      push _
     else if (v[0] == "push")
     {
-        
+        // Add in "offset" if it is by reference
+        p->body = p->body + "push " + printVar(v[1]) + "\n";
     }
     //      call _
     //          call procname
@@ -274,8 +309,8 @@ void Asm::three(std::vector<std::string> v)
     // Cases
     //      start proc name
     //      _ = _
-    p->body = p->body + "\nmov ax , " + v[2] + "\n";
-    p->body = p->body + "mov " + v[0] + " , ax\n";
+    p->body = p->body + "\nmov ax , " + printVar(v[2]) + "\n";
+    p->body = p->body + "mov " + printVar(v[0]) + " , ax\n";
 }
 
 void Asm::four(std::vector<std::string> v)
@@ -300,21 +335,21 @@ void Asm::five(std::vector<std::string> v)
     //      _ = _ op _
     if (v[3] == "*")
     {
-        p->body = p->body + "mov AX, " + v[2] + "\n";
-        p->body = p->body + "mov BX, " + v[4] + "\n";
+        p->body = p->body + "mov AX, " + printVar(v[2]) + "\n";
+        p->body = p->body + "mov BX, " + printVar(v[4]) + "\n";
         p->body = p->body + "imul BX\n";
     }
     else if (v[3] == "+")
     {
-        p->body = p->body + "mov AX, " + v[2] + "\n";
-        p->body = p->body + "add AX, " + v[4] + "\n";
-        p->body = p->body + "mov " + v[0] + " , AX\n";
+        p->body = p->body + "mov AX, " + printVar(v[2]) + "\n";
+        p->body = p->body + "add AX, " + printVar(v[4]) + "\n";
+        p->body = p->body + "mov " + printVar(v[0]) + " , AX\n";
     }
     else if (v[3] == "-")
     {
-        p->body = p->body + "mov AX, " + v[2] + "\n";
-        p->body = p->body + "sub AX, " + v[4] + "\n";
-        p->body = p->body + "mov " + v[0] + " , AX\n";
+        p->body = p->body + "mov AX, " + printVar(v[2]) + "\n";
+        p->body = p->body + "sub AX, " + printVar(v[4]) + "\n";
+        p->body = p->body + "mov " + printVar(v[0]) + " , AX\n";
     }
 }
 
