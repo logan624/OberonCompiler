@@ -361,7 +361,14 @@ void Asm::two(std::vector<std::string> v)
     else if (v[0] == "push")
     {
         // Add in "offset" if it is by reference
-        p->body = p->body + "push " + printVar(v[1]) + "\n";
+        if (isRef(v[1]))
+        {
+            p->body = p->body + "push offset " + printVar(v[1]) + "\n";
+        }
+        else
+        {
+            p->body = p->body + "push " + printVar(v[1]) + "\n";
+        }
     }
     //      call _
     //          call procname

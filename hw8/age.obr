@@ -1,0 +1,10 @@
+MODULE eight;
+VAR  age : INTEGER;
+BEGIN
+ write("Please enter your age:")
+ read(age)
+ age:=age+26;
+ write("In the year 2050, you will be")
+ write(age)
+ writeln("years old")
+END eight.

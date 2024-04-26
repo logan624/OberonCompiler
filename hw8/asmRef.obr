@@ -1,0 +1,13 @@
+MODULE eight;
+VAR  a,b:INTEGER;
+ PROCEDURE one (VAR x:INTEGER;y:INTEGER);
+ VAR  d,e,f:INTEGER;
+ BEGIN 
+   a:=5;
+   b:=10;
+   x:= b - a;
+ END one;
+BEGIN
+ one(a,b);
+ write(a)
+END eight.

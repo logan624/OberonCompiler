@@ -34,17 +34,17 @@ int main(int argc, char* argv[])
 {
     std::string prog_file;
 
-    // if (argc != 2)
-    // {
-    //     std::cout << "Usage: " << argv[0] << " filename" << std::endl;
-    //     return 100;
-    // }
-    // else
-    // {
-    //     prog_file = argv[1];
-    // }
+    if (argc != 2)
+    {
+        std::cout << "Usage: " << argv[0] << " filename" << std::endl;
+        return 100;
+    }
+    else
+    {
+        prog_file = argv[1];
+    }
 
-    prog_file = "oberon.obr";
+    // prog_file = "oberon.obr";
 
     // Create instance of the lexical analyzer
     LexicalAnalyzer* lex = new LexicalAnalyzer(prog_file);
