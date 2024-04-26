@@ -26,9 +26,10 @@ struct ParameterInfo
 
 struct TableRecord {
     TableRecord * m_next;
-    Entry_Type m_entry;
+    Entry_Type m_entry = Entry_Type::VAR;
     std::string m_lexeme;
     Token m_token;
+    bool is_var = true;
 
     int m_depth;
     

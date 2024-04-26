@@ -261,10 +261,14 @@ std::vector<std::string> SymbolTable::GetVariablesAtCurrentDepth()
     for (int i = 0; i < m_table.size(); i++) {
         TableRecord * node = m_table[i];
         while (node != nullptr) {
-            if (node->m_depth == global_depth && node->m_entry == Entry_Type::VAR) {
+            if (node->m_depth == global_depth && node->is_var == true) {
                 variables.push_back(node->m_lexeme);
             }
             node = node->m_next;
+            // if (node->m_depth == global_depth && node->m_entry == Entry_Type::VAR) {
+            //     variables.push_back(node->m_lexeme);
+            // }
+            // node = node->m_next;
         }
     }
     return variables;

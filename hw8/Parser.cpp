@@ -170,6 +170,7 @@ void Prog()
     st.Insert(token.m_lexeme, token, global_depth);
     p_to_proc = st.LookupAtCurrentDepth(token.m_lexeme);
     p_to_proc->m_entry = Entry_Type::FUNCTION;
+    p_to_proc->is_var = false;
 
     // # TODO
     module_name = token;
@@ -216,18 +217,17 @@ void Prog()
         if (global_depth == 2)
         {
             var_names = st.GetVariablesAtCurrentDepth();
-        }
+            lt.addLiterals(var_names);
 
-        lt.addLiterals(var_names);
+            Asm::writeHeader();
+            Asm::writeData(var_names);
+        }
 
         // st.WriteTable(global_depth);
         st.DeleteDepth(global_depth);
         // std::cout << "Deleted Depth " << global_depth << std::endl; 
         global_depth--;
     }
-
-    Asm::writeHeader();
-    Asm::writeData(var_names);
 
     checkNextToken(Token_T::EOF_T, false);
 
@@ -284,6 +284,7 @@ void ConstPart()
         p_rec = st.LookupAtCurrentDepth(constants[i].first.m_lexeme);
 
         p_rec->m_entry = Entry_Type::CONST;
+        p_rec->is_var = false;
         p_rec->m_lexeme = constants[i].first.m_lexeme;
         p_rec->m_token = constants[i].first;
         p_rec->m_depth = global_depth;
@@ -399,6 +400,7 @@ int VarTail()
         p_rec = st.LookupAtCurrentDepth(vars_to_insert[i].first.m_lexeme);
 
         p_rec->m_entry = Entry_Type::VAR;
+        SymbolTable * sts = &st;
         p_rec->m_lexeme = vars_to_insert[i].first.m_lexeme;
         p_rec->m_token = vars_to_insert[i].first;
         p_rec->m_depth = global_depth;
@@ -649,6 +651,7 @@ std::pair<bool, TableRecord *> ProcHeading()
 
     // Set all the procedure struct fields using the params_to_insert function
     p_to_proc->m_entry = Entry_Type::FUNCTION;
+    p_to_proc->is_var = false;
 
     // Set the number of parameters
     p_to_proc->item.procedure.num_params = params_to_insert.size();
@@ -757,8 +760,6 @@ Param_Mode Mode()
 // StatementPart -> begint SeqOfStatements | e
 void StatementPart()
 {
-    Token test = token;
-
     checkNextToken(Token_T::BEGIN, true);
 
     if (prev_empty)
@@ -944,7 +945,7 @@ bool Statement()
                 }
                 else if (curr_token.write == WriteReadType::CHAR)
                 {
-                    tac_file << "writec ";
+                    tac_file << "readc ";
                 }
 
                 write_or_read = true;
@@ -1197,14 +1198,51 @@ void IOStat()
 void InStat()
 {
     checkNextToken(Token_T::READ, false);
-    Token * rp = &token;
-    if (rp != nullptr)
-    {
-        rp->write = WriteReadType::INT;
-    }
-    token_stack.push(token);
+    
+    Token read_token = token;
+    // token_stack.push(token);
+
     checkNextToken(Token_T::L_SYMBOL, false);
     checkNextToken(Token_T::IDENTIFIER, false);
+    // Check the identifier in the symbol tbale, and set the read type based off of its type
+    
+    TableRecord * tr = st.LookupAtCurrentDepth(token.m_lexeme);
+    
+    if (tr == nullptr)
+    {
+        tr = st.Lookup(token.m_lexeme);
+
+        if (tr != nullptr)
+        {
+            if (tr->item.variable.m_type == Var_T::CHAR)
+            {
+                read_token.write = WriteReadType::CHAR;
+            }
+            else
+            {
+                read_token.write = WriteReadType::INT;
+            }
+        }
+        else
+        {
+            read_token.write = WriteReadType::INT;
+        }
+    }
+    else
+    {
+        if (tr->item.variable.m_type == Var_T::CHAR)
+        {
+            read_token.write = WriteReadType::CHAR;
+        }
+        else
+        {
+            read_token.write = WriteReadType::INT;
+        }
+    }
+
+    Token ttt = token;
+
+    token_stack.push(read_token);
     token_stack.push(token);
     checkNextToken(Token_T::R_SYMBOL, false);
 }
@@ -1290,16 +1328,14 @@ void WriteToken()
     std::vector<Token_T> types_to_check = {Token_T::IDENTIFIER, Token_T::NUMBER, Token_T::LITERAL};
     checkNextToken(types_to_check, false);
 
-    Token * pw;
     Token write;
     write.m_token = Token_T::WRITE;
-    pw = &write;
-    token_stack.push(write);
+
+    Token test = token;
 
     if (token.m_token == Token_T::LITERAL)
     {
-        if (pw != nullptr)
-            pw->write = WriteReadType::STR;
+        write.write = WriteReadType::STR;
 
         std::string lname = lt.insertLiteral(token.m_literal);
 
@@ -1307,13 +1343,46 @@ void WriteToken()
         new_literal_for_stack.m_lexeme = lname;
         new_literal_for_stack.m_token = Token_T::LITERAL;
 
+        token_stack.push(write);
         token_stack.push(new_literal_for_stack);
     }
     else
     {
-        if (pw != nullptr)
-            pw->write = WriteReadType::INT;
+        TableRecord * tr = st.LookupAtCurrentDepth(token.m_lexeme);
+    
+        if (tr == nullptr)
+        {
+            tr = st.Lookup(token.m_lexeme);
 
+            if (tr != nullptr)
+            {
+                if (tr->item.variable.m_type == Var_T::CHAR)
+                {
+                    write.write = WriteReadType::CHAR;
+                }
+                else
+                {
+                    write.write = WriteReadType::INT;
+                }
+            }
+            else
+            {
+                write.write = WriteReadType::INT;
+            }
+        }
+        else
+        {
+            if (tr->item.variable.m_type == Var_T::CHAR)
+            {
+                write.write = WriteReadType::CHAR;
+            }
+            else
+            {
+                write.write = WriteReadType::INT;
+            }
+        }
+
+        token_stack.push(write);
         token_stack.push(token);
     }
 }

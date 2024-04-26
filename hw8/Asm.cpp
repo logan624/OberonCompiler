@@ -159,9 +159,11 @@ void Asm::writeData(std::vector<std::string> v)
 
     for (std::string var : v)
     {
+        bool is_char = false;
+
         if (var[0] == '_')
         {
-            asm_file << "\t" << var << "\tDB\t";
+            asm_file << "\t" << var.substr(1, var.size() - 1) << "\tDB\t";
 
             std::string lit = lt.getLiteral(var);
 
@@ -169,7 +171,32 @@ void Asm::writeData(std::vector<std::string> v)
         }
         else
         {
-            asm_file << "\t" << var << "\tDW\t" << "?";
+            TableRecord * tr = st.LookupAtCurrentDepth(var);
+    
+            if (tr == nullptr)
+            {
+                tr = st.Lookup(var);
+            }
+
+            if (tr != nullptr)
+            {
+                if (tr->is_var)
+                {
+                    if (tr->item.variable.m_type == Var_T::CHAR)
+                        is_char = true;
+                }
+            }
+
+            if (!is_char)
+            {
+                asm_file << "\t" << var << "\tDW\t" << "?";
+            }
+            else
+            {
+                asm_file << "\t" << var << "\tDB\t" << "?";
+            }
+
+            is_char = false;
         }
 
         asm_file << std::endl;
@@ -226,7 +253,11 @@ std::string printVar(std::string v)
     // _bp case
     else
     {
-        if (v[1] != 't')
+        if (v[1] == 'S')
+        {
+            v = v.substr(1, v.length() - 1);
+        }
+        else if (v[1] != 't')
         {
             v = v.substr(1, v.length() - 1);
             v = "[" + v + "]";
@@ -340,26 +371,39 @@ void Asm::two(std::vector<std::string> v)
     }
     else if (v[0] == "wri")
     {
-        p->body = p->body + 
+        p->body = p->body + "mov ax , " + printVar(v[1]) + "\n";
+        p->body = p->body + "call writeint" + "\n";
     }
     else if (v[0] == "wrs")
     {
-
+        p->body = p->body + "mov dx , offset " + printVar(v[1]) + "\n";
+        p->body = p->body + "call writestr" + "\n";
     }
+    // If I follow through with char
     else if (v[0] == "wrc")
     {
-
+        p->body = p->body + "mov dl , " + printVar(v[1]) + "\n";
+        p->body = p->body + "call writech" + "\n";
     }
     else if (v[0] == "readi")
     {
-
+        p->body = p->body + "call readint" + "\n";
+        if (isRef(v[1]))
+        {
+            p->body = p->body + "mov ax , " + printVar(v[1]) + "\n";
+            p->body = p->body + "mov [ax] , bx" + "\n";
+        }
+        else
+        {
+            p->body = p->body + "mov " + printVar(v[1]) + " , bx" + "\n";
+        }
     }
+    // If I follow through with char
     else if (v[0] == "readc")
     {
-
+        p->body = p->body + "call readch" + "\n";
+        p->body = p->body + "mov " + printVar(v[1]) + ", al\n";
     }
-
-
 }
 
 void Asm::three(std::vector<std::string> v)
