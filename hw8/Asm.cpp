@@ -243,7 +243,22 @@ std::string printVar(std::string v)
 
 void Asm::one(std::vector<std::string> v)
 {
+    Procedure * p = nullptr;
+
+    if (proc_name != "")
+    {
+        p = this->getProc(proc_name);
+    }
+    else
+    {
+        p = this->getProc(module_name);
+    }
+
     // Case for wrln
+    if (v[0] == "wrln")
+    {
+        p->body = p->body + "call writeln" + "\n";
+    }
 }
 
 void Asm::two(std::vector<std::string> v)
@@ -323,6 +338,27 @@ void Asm::two(std::vector<std::string> v)
     {
         p->body = p->body + "call " + v[1] + "\n";
     }
+    else if (v[0] == "wri")
+    {
+        p->body = p->body + 
+    }
+    else if (v[0] == "wrs")
+    {
+
+    }
+    else if (v[0] == "wrc")
+    {
+
+    }
+    else if (v[0] == "readi")
+    {
+
+    }
+    else if (v[0] == "readc")
+    {
+
+    }
+
 
 }
 

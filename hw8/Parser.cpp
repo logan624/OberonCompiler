@@ -921,12 +921,32 @@ bool Statement()
             }
             else if (curr_token.m_token == Token_T::WRITE)
             {
-                tac_file << "write ";
+                if (curr_token.write == WriteReadType::INT)
+                {
+                    tac_file << "wri ";
+                }
+                else if (curr_token.write == WriteReadType::STR)
+                {
+                    tac_file << "wrs ";
+                }
+                else if (curr_token.write == WriteReadType::CHAR)
+                {
+                    tac_file << "wrc ";
+                }
+
                 write_or_read = true;
             }
             else if (curr_token.m_token == Token_T::READ)
             {
-                tac_file << "read ";
+                if (curr_token.write == WriteReadType::INT)
+                {
+                    tac_file << "readi ";
+                }
+                else if (curr_token.write == WriteReadType::CHAR)
+                {
+                    tac_file << "writec ";
+                }
+
                 write_or_read = true;
             }
             else if (curr_token.m_token == Token_T::WRITELN)
@@ -1177,6 +1197,11 @@ void IOStat()
 void InStat()
 {
     checkNextToken(Token_T::READ, false);
+    Token * rp = &token;
+    if (rp != nullptr)
+    {
+        rp->write = WriteReadType::INT;
+    }
     token_stack.push(token);
     checkNextToken(Token_T::L_SYMBOL, false);
     checkNextToken(Token_T::IDENTIFIER, false);
@@ -1265,12 +1290,17 @@ void WriteToken()
     std::vector<Token_T> types_to_check = {Token_T::IDENTIFIER, Token_T::NUMBER, Token_T::LITERAL};
     checkNextToken(types_to_check, false);
 
+    Token * pw;
     Token write;
     write.m_token = Token_T::WRITE;
+    pw = &write;
     token_stack.push(write);
 
     if (token.m_token == Token_T::LITERAL)
     {
+        if (pw != nullptr)
+            pw->write = WriteReadType::STR;
+
         std::string lname = lt.insertLiteral(token.m_literal);
 
         Token new_literal_for_stack;
@@ -1281,6 +1311,9 @@ void WriteToken()
     }
     else
     {
+        if (pw != nullptr)
+            pw->write = WriteReadType::INT;
+
         token_stack.push(token);
     }
 }

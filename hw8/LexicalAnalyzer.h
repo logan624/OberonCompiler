@@ -72,6 +72,12 @@ enum class Token_T {
     WRITELN
 };
 
+enum class WriteReadType {
+    CHAR,
+    INT,
+    STR,
+};
+
 // Token Struct Type
 struct Token
 {
@@ -81,6 +87,7 @@ struct Token
     float m_valuer;
     std::string m_literal;
     bool m_is_int;
+    WriteReadType write;
 };
 
 extern std::map<std::string, Token_T> reserved_words_dict;
