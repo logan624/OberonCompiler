@@ -37,4 +37,6 @@ class Asm
         std::string module_name;
         std::string tac_name;
         std::string proc_name;
+        std::vector<std::string> main_temps;
+        bool in_module_code = false;
 };

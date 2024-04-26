@@ -85,6 +85,7 @@ void Asm::readTACFile() {
 
         int num = howManyNotBlank(one, two, three, four, five);
         std::vector<std::string> vec;
+
         vec.push_back(one);
         vec.push_back(two);
         vec.push_back(three);
@@ -112,6 +113,32 @@ void Asm::readTACFile() {
                 break;
             default:
                 ;
+        }
+
+        if (in_module_code)
+        {
+            for (std::string s : vec)
+            {
+                if (s.length() > 2)
+                {
+                    if (s[0] == '_' && s[1] == 't')
+                    {
+                        bool found = false;
+                        for (std::string mt : main_temps)
+                        {
+                            if (mt == s.substr(1, s.length() - 1))
+                            {
+                                found = true;
+                            }
+                        }
+
+                        if (!found)
+                        {
+                            main_temps.push_back(s.substr(1, s.length() - 1));
+                        }
+                    }
+                }
+            }
         }
 
     }
@@ -147,9 +174,6 @@ void Asm::writeData(std::vector<std::string> v)
 
         asm_file << std::endl;
     }
-
-    asm_file << ".CODE" << std::endl;
-    asm_file << "include io.asm" << std::endl << std::endl;
 }
 
 void Asm::addProc(std::string name)
@@ -202,8 +226,16 @@ std::string printVar(std::string v)
     // _bp case
     else
     {
-        v = v.substr(1, v.length() - 1);
-        v = "[" + v + "]";
+        if (v[1] != 't')
+        {
+            v = v.substr(1, v.length() - 1);
+            v = "[" + v + "]";
+        }
+        else
+        {
+            v = v.substr(1, v.length() - 1);
+        }
+        
     }
 
     return v;
@@ -247,6 +279,7 @@ void Asm::two(std::vector<std::string> v)
         }
         else
         {
+            in_module_code = true;
             proc_name = "";
             p = this->getProc(module_name);
             p->body = p->body + v[1] + "    PROC" + "\n";
@@ -401,6 +434,14 @@ void Asm::printProc(std::string pname)
 
 void Asm::writeCode()
 {
+    for (std::string mt : main_temps)
+    {
+        asm_file << "\t" << mt << "\tDW\t?" << std::endl;    
+    }
+
+    asm_file << ".CODE" << std::endl;
+    asm_file << "include io.asm" << std::endl << std::endl;
+
     for (Procedure proc : procs)
     {
             asm_file << proc.body;
