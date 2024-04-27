@@ -1,0 +1,8 @@
+MODULE one;
+VAR  a,b,d:INTEGER;
+BEGIN
+  a:=5;
+  b:=10;
+  d:=a*b;
+  WRITELN(d);
+END one.

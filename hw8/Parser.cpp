@@ -828,10 +828,10 @@ void SeqOfStatements()
 {
     bool io = Statement();
 
-    if (io == false)
-    {
+    // if (io == false)
+    // {
         checkNextToken(Token_T::SEMICOLON, true);
-    }
+    // }
 
     if (prev_empty)
     {
@@ -847,10 +847,10 @@ void StatTail()
 {
     bool io = Statement();
 
-    if (io == false)
-    {
+    // if (io == false)
+    // {
         checkNextToken(Token_T::SEMICOLON, true);
-    }
+    // }
     
 
     if (prev_empty)

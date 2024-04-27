@@ -81,9 +81,9 @@ std::map<std::string, Token_T> reserved_words_dict = {
         {"LITERAL", Token_T::LITERAL},
 
         // READ / WRITE
-        {"read", Token_T::READ},
-        {"write", Token_T::WRITE},
-        {"writeln", Token_T::WRITELN}
+        {"READ", Token_T::READ},
+        {"WRITE", Token_T::WRITE},
+        {"WRITELN", Token_T::WRITELN}
     };
 
 void ReadNext()
@@ -116,7 +116,7 @@ bool isReservedWord(std::string s)
     {
         "MODULE", "PROCEDURE", "VAR", "BEGIN", "END", "INTEGER", "REAL",
         "CHAR", "IF", "THEN", "ELSE", "ELSIF", "WHILE", "DO", "ARRAY",
-        "RECORD", "CONST", "TYPE", "MOD", "OR", "DIV", "write", "read", "writeln"};
+        "RECORD", "CONST", "TYPE", "MOD", "OR", "DIV", "WRITE", "READ", "WRITELN"};
 
     for (const std::string word : reserved_words)
     {
