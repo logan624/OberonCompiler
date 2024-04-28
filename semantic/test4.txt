@@ -1,7 +1,0 @@
-MODULE two;
-	VAR three, four : REAL;
-	  PROCEDURE  five;
-
-	  END five;
-
-	END two.

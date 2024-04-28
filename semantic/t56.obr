@@ -1,4 +1,0 @@
-MODULE test6;
-VAR x,y,z,x:INTEGER;
-
-END test6.

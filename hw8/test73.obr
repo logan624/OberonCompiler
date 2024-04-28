@@ -1,9 +1,0 @@
-MODULE three;
-VAR a,b,e,d:INTEGER;
-BEGIN
-   a:= 5;
-   b:= 10;
-   d:= 20;
-   e:= d + a * b;
-   write(e)
-END three.

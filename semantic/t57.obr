@@ -1,7 +1,0 @@
-MODULE test7;
-VAR a,b:INTEGER;
- PROCEDURE a(x,y:INTEGER);
- 
- END a;
-
-END test7.

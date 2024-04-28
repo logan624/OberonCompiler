@@ -1,7 +1,0 @@
-MODULE three;
-	VAR four, five : CHAR;
-	  PROCEDURE six ( VAR seven : INTEGER ; eight : INTEGER );
-	  
-	  END six;
-
-	END three.

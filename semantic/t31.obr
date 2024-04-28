@@ -1,8 +1,0 @@
-MODULE Main;
-PROCEDURE Proc1; 
-BEGIN
-END Proc1; 
-
-BEGIN
-END Main.
-

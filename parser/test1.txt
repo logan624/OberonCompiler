@@ -1,4 +1,0 @@
-MODULE one;
-	VAR two : INTEGER;
-
-	END one.

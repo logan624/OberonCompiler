@@ -1,9 +1,0 @@
-MODULE seven;
-CONST g=22;
-VAR  a,b,c,d,e,f:INTEGER;
-BEGIN
-   a:= 5;
-   b:= 10;
-   d:= g + a;
-   c:= (e + d) * (a + b);
-END seven.

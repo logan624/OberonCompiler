@@ -1,8 +1,0 @@
-MODULE two;
-VAR   a,b,d:INTEGER;
-BEGIN
-   a:= 5;
-   b:= 10;
-   d:= a * b;
-   write(d)
-END two.

@@ -1,8 +1,0 @@
-MODULE six;
-VAR  a,b,c,d,e,f:INTEGER;
-BEGIN
-   a:= 5;
-   b:= 10;
-   d:= 20;
-   c:= (e + d) * (a + b);
-END six.
